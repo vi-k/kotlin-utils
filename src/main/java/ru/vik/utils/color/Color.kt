@@ -1,6 +1,8 @@
 package ru.vik.utils.color
 
-import ru.vik.utils.math.roundToInt
+import ru.vik.utils.math.posRoundToInt
+import java.util.logging.Logger
+import kotlin.math.roundToInt
 
 /**
  * Компоненты цвета через свойства.
@@ -55,6 +57,29 @@ fun Int.layer(color: Int): Int {
 
     val alpha = a2 / a
     val rAlpha = 1.0 - alpha
+    val r = (this.r * rAlpha + color.r * alpha).posRoundToInt()
+    val g = (this.g * rAlpha + color.g * alpha).posRoundToInt()
+    val b = (this.b * rAlpha + color.b * alpha).posRoundToInt()
+
+    return Color.argb(a.posRoundToInt(), r, g, b)
+}
+
+fun Int.layer2(color: Int): Int {
+    // Попытка перевести с Double на Int оказалась неуспешной. На ПК даблы быстрее Int.
+    // Думаю, что и на Андроиде будет тоже самое
+    val a2 = color.a.toDouble()
+    if (a2 == 0.0) return this
+
+    val a1 = this.a.toDouble()
+
+    // Результирующая прозрачность вычисляется по формуле:
+    // na = na1 * na2, - где na - величина, обратная прозрачности (na = 1-a).
+    // Следовательно:
+    // a = 1 - (1 - a1) * (1 - a2) = a1 + a2 - a1 * a2.
+    val a = a1 + a2 - (a1 * a2) / 255.0
+
+    val alpha = a2 / a
+    val rAlpha = 1.0 - alpha
     val r = (this.r * rAlpha + color.r * alpha).roundToInt()
     val g = (this.g * rAlpha + color.g * alpha).roundToInt()
     val b = (this.b * rAlpha + color.b * alpha).roundToInt()
@@ -69,9 +94,8 @@ fun Int.layer(color: Int): Int {
  * прозрачным, 1 - цвет не меняется).
  * @return "Разбавленный" цвет.
  */
-fun Int.mix(weight: Float) = this.a((this.a * weight).roundToInt())
-
-fun Int.mix(weight: Double) = this.a((this.a * weight).roundToInt())
+fun Int.mix(weight: Float) = this.a((this.a * weight).posRoundToInt())
+fun Int.mix(weight: Double) = this.a((this.a * weight).posRoundToInt())
 
 /**
  * Разбавление цвета другим цветом.
@@ -114,6 +138,32 @@ fun Int.mix(weight1: Double, color2: Int, weight2: Double): Int {
 
     val cWeight1 = aw1 / a
     val cWeight2 = 1.0 - cWeight1 // тоже самое, что и aw2 / a
+    val r = (this.r * cWeight1 + color2.r * cWeight2).posRoundToInt()
+    val g = (this.g * cWeight1 + color2.g * cWeight2).posRoundToInt()
+    val b = (this.b * cWeight1 + color2.b * cWeight2).posRoundToInt()
+
+    return Color.argb(a.posRoundToInt(), r, g, b)
+}
+
+fun Int.mix2(weight: Double, color: Int) = this.mix2(weight, color, 1.0 - weight)
+
+fun Int.mix2(weight1: Double, color2: Int, weight2: Double): Int {
+    val aw1 = this.a * weight1
+    val aw2 = color2.a * weight2
+    val a = aw1 + aw2
+
+    if (a == 0.0) return 0
+
+    // Если при расчёте каналов r, g, b мы будем использовать указанные веса, когда они
+    // в сумме не составляют 1, то на самом деле к цвету мы незаметно будем примешивать
+    // чёрный цвет (r=0, g=0, b=0). Белый цвет совершенно безосновательно начнёт сереть.
+    // (В Gimp'е почему-то именно так и происходит! Сделайте изображение из двух половин -
+    // белой и прозрачной, - уменьшите его до 1 пикселя и посмотрите на результат.
+    // Неожиданно!) Именно поэтому пропорционально увеличиваем веса (с учётом канала a!),
+    // чтобы в сумме они составили 1.
+
+    val cWeight1 = aw1 / a
+    val cWeight2 = 1.0 - cWeight1 // тоже самое, что и aw2 / a
     val r = (this.r * cWeight1 + color2.r * cWeight2).roundToInt()
     val g = (this.g * cWeight1 + color2.g * cWeight2).roundToInt()
     val b = (this.b * cWeight1 + color2.b * cWeight2).roundToInt()
@@ -138,4 +188,101 @@ class Color {
             return String.format("argb(%d,%d,%d,%d)", color.a, color.r, color.g, color.b)
         }
     }
+}
+
+fun speedTest(maxTime: Int) {
+    // Тест скорости
+    val log = Logger.getAnonymousLogger()
+
+    var count = 0L
+    var t = System.currentTimeMillis()
+    loop@ while(true)
+        for (c1 in 0..255) {
+            for (c2 in 0..255) {
+                val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
+                val rgb2 = (c2 shl 16) or (c2 shl 8) or c2
+                for (a1 in 1..255) {
+                    for (a2 in 1..255) {
+                        val argb1 = (a1 shl 24) or rgb1
+                        val argb2 = (a2 shl 24) or rgb2
+
+                        argb1.layer(argb2)
+                        count++
+                    }
+                }
+
+                if (System.currentTimeMillis() - t >= maxTime) break@loop
+            }
+        }
+    log.warning(String.format("layer(): %.1fs count=%d (%.1fM)",
+            (System.currentTimeMillis() - t) / 1000f, count, count / 1000000f))
+
+    count = 0L
+    t = System.currentTimeMillis()
+    loop@ while(true)
+        for (c1 in 0..255) {
+            for (c2 in 0..255) {
+                val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
+                val rgb2 = (c2 shl 16) or (c2 shl 8) or c2
+                for (a1 in 1..255) {
+                    for (a2 in 1..255) {
+                        val argb1 = (a1 shl 24) or rgb1
+                        val argb2 = (a2 shl 24) or rgb2
+
+                        argb1.layer2(argb2)
+                        count++
+                    }
+                }
+
+                if (System.currentTimeMillis() - t >= maxTime) break@loop
+            }
+        }
+    log.warning(String.format("layer2(): %.1fs count=%d (%.1fM)",
+            (System.currentTimeMillis() - t) / 1000f, count, count / 1000000f))
+
+    count = 0L
+    t = System.currentTimeMillis()
+    loop@ while(true)
+        for (c1 in 0..255) {
+            for (c2 in 0..255) {
+                val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
+                val rgb2 = (c2 shl 16) or (c2 shl 8) or c2
+                for (a1 in 1..255) {
+                    for (a2 in 1..255) {
+                        val argb1 = (a1 shl 24) or rgb1
+                        val argb2 = (a2 shl 24) or rgb2
+
+                        argb1.mix(0.75, argb2)
+                        count++
+                    }
+                }
+
+                if (System.currentTimeMillis() - t >= maxTime) break@loop
+            }
+        }
+    log.warning(String.format("mix(): %.1fs count=%d (%.1fM)",
+            (System.currentTimeMillis() - t) / 1000f, count, count / 1000000f))
+
+    count = 0L
+    t = System.currentTimeMillis()
+    loop@ while(true)
+        for (c1 in 0..255) {
+            for (c2 in 0..255) {
+                val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
+                val rgb2 = (c2 shl 16) or (c2 shl 8) or c2
+                for (a1 in 1..255) {
+                    for (a2 in 1..255) {
+                        val argb1 = (a1 shl 24) or rgb1
+                        val argb2 = (a2 shl 24) or rgb2
+
+                        argb1.mix2(0.75, argb2)
+                        count++
+                    }
+                }
+
+                if (System.currentTimeMillis() - t >= maxTime) break@loop
+            }
+        }
+    log.warning(String.format("mix2(): %.1fs count=%d (%.1fM)",
+            (System.currentTimeMillis() - t) / 1000f, count, count / 1000000f))
 }

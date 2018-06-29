@@ -7,10 +7,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import ru.vik.utils.color.speedTest
+import ru.vik.utils.math.speedTest
 
 @RunWith(AndroidJUnit4::class)
-class ColorInstrumentedTest {
+class MathInstrumentedTest {
     @Test
     fun test() {
         speedTest(500)

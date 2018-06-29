@@ -3,22 +3,13 @@ package ru.vik.utils
 import org.junit.Test
 
 import org.junit.Assert.*
-import java.util.logging.Logger
+import ru.vik.utils.color.*
 
 import ru.vik.utils.color.Color.Companion.argb
-import ru.vik.utils.color.layer
-import ru.vik.utils.color.mix
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see [Testing documentation](http://d.android.com/tools/testing)
- */
 class ColorUnitTest {
     @Test
     fun test() {
-//        val log = Logger.getLogger("Test")
-
         // Наложение цветов - layer()
 
         // Наложение прозрачного цвета
@@ -126,59 +117,7 @@ class ColorUnitTest {
                 .mix(0.25, argb(128, 0, 0, 255), 0.25)
         assertEquals(argb(64, 128, 0, 128), color)
 
-//        val (a, r, g, b) = argb
 
-
-//        // Тест скорости
-//        val MAX_TIME = 10000
-//
-//        var count = 0L
-//        var t = System.currentTimeMillis()
-//
-//        loop@ while(true)
-//            for (c1 in 0..255) {
-//                for (c2 in 0..255) {
-//                    val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
-//                    val rgb2 = (c2 shl 16) or (c2 shl 8) or c2
-//                    for (a1 in 1..255) {
-//                        for (a2 in 1..255) {
-//                            val argb1 = (a1 shl 24) or rgb1
-//                            val argb2 = (a2 shl 24) or rgb2
-//
-//                            argb1.layer(argb2)
-//                            count++
-//                        }
-//                    }
-//
-//                    if (System.currentTimeMillis() - t >= MAX_TIME) break@loop
-//                }
-//            }
-//        log.warning(String.format("layer(): %.1fs count=%d (%.1fM)",
-//                (System.currentTimeMillis() - t) / 1000f, count, count / 1000000f))
-//
-//        // Тест скорости
-//        count = 0L
-//        t = System.currentTimeMillis()
-//
-//        loop@ while(true)
-//            for (c1 in 0..255) {
-//                for (c2 in 0..255) {
-//                    val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
-//                    val rgb2 = (c2 shl 16) or (c2 shl 8) or c2
-//                    for (a1 in 1..255) {
-//                        for (a2 in 1..255) {
-//                            val argb1 = (a1 shl 24) or rgb1
-//                            val argb2 = (a2 shl 24) or rgb2
-//
-//                            argb1.mix(0.75, argb2)
-//                            count++
-//                        }
-//                    }
-//
-//                    if (System.currentTimeMillis() - t >= MAX_TIME) break@loop
-//                }
-//            }
-//        log.warning(String.format("mix(): %.1fs count=%d (%.1fM)",
-//                (System.currentTimeMillis() - t) / 1000f, count, count / 1000000f))
+        //speedTest(1000)
     }
 }
