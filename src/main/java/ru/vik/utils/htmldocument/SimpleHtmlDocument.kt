@@ -40,20 +40,20 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             }
         }
 
-        tag.attributes["leftIndent"]?.toFloatOrNull()?.also {
-            paragraphStyle.leftIndent = it
+        tag.attributes["leftIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.leftIndent = it }
         }
 
-        tag.attributes["rightIndent"]?.toFloatOrNull()?.also {
-            paragraphStyle.rightIndent = it
+        tag.attributes["rightIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.rightIndent = it }
         }
 
-        tag.attributes["firstLeftIndent"]?.toFloatOrNull()?.also {
-            paragraphStyle.firstLeftIndent = it
+        tag.attributes["firstLeftIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.firstLeftIndent = it }
         }
 
-        tag.attributes["firstRightIndent"]?.toFloatOrNull()?.also {
-            paragraphStyle.firstRightIndent = it
+        tag.attributes["firstRightIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.firstRightIndent = it }
         }
     }
 

@@ -190,7 +190,7 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
         }
 
         private val reSize: Regex by lazy {
-            Regex("""^(\d+(\.\d*)?)(|px|em|%)$""", RegexOption.IGNORE_CASE)
+            Regex("""^(-?\d+(\.\d*)?)(|px|em|%)$""", RegexOption.IGNORE_CASE)
         }
 
         fun getAttrColor(value: String): Int? {
@@ -241,7 +241,7 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                     return when (it.groupValues[3].toLowerCase()) {
                         "%"  -> Size.percent(num)
                         "em" -> Size.em(num)
-                        else -> Size.px(num)
+                        else -> Size.dp(num)
                     }
                 }
             }

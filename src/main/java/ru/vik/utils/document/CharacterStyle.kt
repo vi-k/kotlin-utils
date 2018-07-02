@@ -8,7 +8,7 @@ class CharacterStyle(var font: String? = null,                // Названи�
                      var underline: Boolean? = null,          // Подчёркивание
                      var strike: Boolean? = null,             // Зачёркнутый текст
                      var color: Int? = null,                  // Цвет букв
-                     var baselineShift: Size = Size.px(0f), // Смещение базовой линии
+                     var baselineShift: Size = Size.dp(0f), // Смещение базовой линии
                      var letterSpacing: Float? = null,        // Расстояние между буквами
                      var allCaps: Caps? = null                // Все заглавные
 ) {
@@ -20,16 +20,16 @@ class CharacterStyle(var font: String? = null,                // Названи�
         characterStyle.font?.also { this.font = it }
 
         // Смещение базовой линии рассчитываем до того, как изменим шрифт
-        val size = characterStyle.baselineShift.tryToPixels(this.size)
+        val size = characterStyle.baselineShift.tryToDp(this.size)
         when {
             size.isRelative()               -> this.baselineShift = characterStyle.baselineShift
             this.baselineShift.isRelative() -> this.baselineShift = size
             else                            -> {
-                this.baselineShift = Size(this.baselineShift.size + size.size, Size.Units.PX)
+                this.baselineShift = Size(this.baselineShift.size + size.size, Size.Units.DP)
             }
         }
 
-        this.size = characterStyle.size.tryToPixels(this.size)
+        this.size = characterStyle.size.tryToDp(this.size)
         this.scaleX *= characterStyle.scaleX
         characterStyle.bold?.also { this.bold = it }
         characterStyle.italic?.also { this.italic = it }
@@ -58,14 +58,14 @@ class CharacterStyle(var font: String? = null,                // Названи�
     companion object {
         fun default() = CharacterStyle(
                 font = null,
-                size = Size.px(16f),
+                size = Size.dp(16f),
                 scaleX = 1f,
                 bold = false,
                 italic = false,
                 underline = false,
                 strike = false,
                 color = 0x00ffffff.inv(),
-                baselineShift = Size.px(0f),
+                baselineShift = Size.dp(0f),
                 letterSpacing = 0f,
                 allCaps = Caps.NONE
         )

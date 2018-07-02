@@ -1,11 +1,11 @@
 package ru.vik.utils.document
 
 class ParagraphStyle(var align: Align? = null,
-                     var leftIndent: Float? = null,
-                     var rightIndent: Float? = null,
+                     var leftIndent: Size? = null,
+                     var rightIndent: Size? = null,
                      var firstAlign: Align? = null,
-                     var firstLeftIndent: Float? = null,
-                     var firstRightIndent: Float? = null,
+                     var firstLeftIndent: Size? = null,
+                     var firstRightIndent: Size? = null,
                      var lastAlign: Align? = null,
                      var dropCapCharacters: Int? = null,
                      var dropCapLines: Int? = null,
@@ -65,8 +65,8 @@ class ParagraphStyle(var align: Align? = null,
     companion object {
         fun default() = ParagraphStyle(
                 align = Align.LEFT,
-                leftIndent = 0.0f,
-                rightIndent = 0.0f,
+                leftIndent = Size.dp(0f),
+                rightIndent = Size.dp(0f),
                 firstAlign = null,
                 firstLeftIndent = null,
                 firstRightIndent = null,
