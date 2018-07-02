@@ -13,10 +13,10 @@ val Int.r get() = this ushr 16 and 0xff
 val Int.g get() = this ushr 8 and 0xff
 val Int.b get() = this and 0xff
 
-fun Int.a(value: Int) = (this and 0x00ffffff) or (value shl 24)
-fun Int.r(value: Int) = (this and 0xff0000.inv()) or (value shl 16)
-fun Int.g(value: Int) = (this and 0xff00.inv()) or (value shl 8)
-fun Int.b(value: Int) = (this and 0xff.inv()) or value
+fun Int.setA(value: Int) = (this and 0x00ffffff) or (value shl 24)
+fun Int.setR(value: Int) = (this and 0xff0000.inv()) or (value shl 16)
+fun Int.setG(value: Int) = (this and 0xff00.inv()) or (value shl 8)
+fun Int.setB(value: Int) = (this and 0xff.inv()) or value
 
 /**
  * Все компоненты цвета через мультидекларацию:
@@ -94,8 +94,9 @@ fun Int.layer2(color: Int): Int {
  * прозрачным, 1 - цвет не меняется).
  * @return "Разбавленный" цвет.
  */
-fun Int.mix(weight: Float) = this.a((this.a * weight).posRoundToInt())
-fun Int.mix(weight: Double) = this.a((this.a * weight).posRoundToInt())
+fun Int.mix(weight: Float) = this.setA((this.a * weight).posRoundToInt())
+
+fun Int.mix(weight: Double) = this.setA((this.a * weight).posRoundToInt())
 
 /**
  * Разбавление цвета другим цветом.
@@ -196,7 +197,7 @@ fun speedTest(maxTime: Int) {
 
     var count = 0L
     var t = System.currentTimeMillis()
-    loop@ while(true)
+    loop@ while (true)
         for (c1 in 0..255) {
             for (c2 in 0..255) {
                 val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
@@ -219,7 +220,7 @@ fun speedTest(maxTime: Int) {
 
     count = 0L
     t = System.currentTimeMillis()
-    loop@ while(true)
+    loop@ while (true)
         for (c1 in 0..255) {
             for (c2 in 0..255) {
                 val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
@@ -242,7 +243,7 @@ fun speedTest(maxTime: Int) {
 
     count = 0L
     t = System.currentTimeMillis()
-    loop@ while(true)
+    loop@ while (true)
         for (c1 in 0..255) {
             for (c2 in 0..255) {
                 val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
@@ -265,7 +266,7 @@ fun speedTest(maxTime: Int) {
 
     count = 0L
     t = System.currentTimeMillis()
-    loop@ while(true)
+    loop@ while (true)
         for (c1 in 0..255) {
             for (c2 in 0..255) {
                 val rgb1 = (c1 shl 16) or (c1 shl 8) or c1
