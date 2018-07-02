@@ -25,22 +25,22 @@ class ParagraphStyle(var align: Align? = null,
         NONE, MANUAL//, AUTO
     }
 
-    fun attach(ps: ParagraphStyle): ParagraphStyle {
-        ps.align?.also { this.align = it }
-        ps.leftIndent?.also { this.leftIndent = it }
-        ps.rightIndent?.also { this.rightIndent = it }
-        ps.firstAlign?.also { this.firstAlign = it }
-        ps.firstLeftIndent?.also { this.firstLeftIndent = it }
-        ps.firstRightIndent?.also { this.firstRightIndent = it }
-        ps.lastAlign?.also { this.lastAlign = it }
-        ps.dropCapCharacters?.also { this.dropCapCharacters = it }
-        ps.dropCapLines?.also { this.dropCapLines = it }
-        ps.dropCapStyle?.also { this.dropCapStyle = it }
-        ps.tabStop?.also { this.tabStop = it }
-        ps.baselineTop?.also { this.baselineTop = it }
-        ps.baselineGrid?.also { this.baselineGrid = it }
-        ps.baselineBottom?.also { this.baselineBottom = it }
-        ps.hyphens?.also { this.hyphens = it }
+    fun attach(paragraphStyle: ParagraphStyle): ParagraphStyle {
+        paragraphStyle.align?.also { this.align = it }
+        paragraphStyle.leftIndent?.also { this.leftIndent = it }
+        paragraphStyle.rightIndent?.also { this.rightIndent = it }
+        paragraphStyle.firstAlign?.also { this.firstAlign = it }
+        paragraphStyle.firstLeftIndent?.also { this.firstLeftIndent = it }
+        paragraphStyle.firstRightIndent?.also { this.firstRightIndent = it }
+        paragraphStyle.lastAlign?.also { this.lastAlign = it }
+        paragraphStyle.dropCapCharacters?.also { this.dropCapCharacters = it }
+        paragraphStyle.dropCapLines?.also { this.dropCapLines = it }
+        paragraphStyle.dropCapStyle?.also { this.dropCapStyle = it }
+        paragraphStyle.tabStop?.also { this.tabStop = it }
+        paragraphStyle.baselineTop?.also { this.baselineTop = it }
+        paragraphStyle.baselineGrid?.also { this.baselineGrid = it }
+        paragraphStyle.baselineBottom?.also { this.baselineBottom = it }
+        paragraphStyle.hyphens?.also { this.hyphens = it }
         return this
     }
 

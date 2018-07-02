@@ -29,14 +29,17 @@ data class Size(val size: Float, val units: Units) {
     fun isRelative() = this.units != Units.PX
 
     /**
-     * Преобразование размера в пиксели, если возможно. Если невозможно, возврат значения
-     * по-умолчанию.
+     * Возврат значения в пикселях или значения по-умолчанию.
      *
      * @param default Значение по-умолчанию.
      * @return Размер в пикселях или значение по-умолчанию.
      */
-    fun toPixels(default: Float = 0f): Float {
+    fun getPixelsOrDefault(default: Float): Float {
         return if (this.units == Units.PX) this.size else default
+    }
+
+    fun getPixelsOrZero(): Float {
+        return if (this.units == Units.PX) this.size else 0f
     }
 
     /**
@@ -46,7 +49,7 @@ data class Size(val size: Float, val units: Units) {
      * @param parentSize Размер родителя для вычисления единиц, заданных в RATIO.
      * @return Вычисленный размер в пикселях.
      */
-    fun toPixels(fontSize: Float, parentSize: Float = fontSize): Float {
+    fun toPixels(fontSize: Float, parentSize: Float): Float {
         return when (this.units) {
             Units.PX    -> this.size
             Units.EM    -> this.size * fontSize
@@ -62,7 +65,7 @@ data class Size(val size: Float, val units: Units) {
      * @return 1) Размер в пикселях, если преобразование возможно; 2) this, если преобразование
      * невозможно (если и текущий, и родительский размер заданы в относительных единицах).
      */
-    fun toPixels(fontSize: Size, parentSize: Float? = null): Size {
+    fun tryToPixels(fontSize: Size, parentSize: Float? = null): Size {
         if (this.units == Units.RATIO && parentSize != null)
             return px(this.size * parentSize)
 

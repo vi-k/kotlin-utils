@@ -2,15 +2,15 @@ package ru.vik.utils.document
 
 class Paragraph(text: String? = null) : ParagraphItem {
     var parent: Section? = null
-    val bs = BlockStyle()
-    val ps = ParagraphStyle()
-    val cs = CharacterStyle()
+    val blockStyle = BlockStyle()
+    val paragraphStyle = ParagraphStyle()
+    val characterStyle = CharacterStyle()
 
     val text = if (text != null) StringBuilder(text) else StringBuilder()
     val spans = mutableListOf<Span>()
 
-    class Span(val bs: BlockStyle = BlockStyle(),
-               val cs: CharacterStyle = CharacterStyle(),
+    class Span(val blockStyle: BlockStyle = BlockStyle(),
+               val characterStyle: CharacterStyle = CharacterStyle(),
                var start: Int = 0,
                var end: Int = -1
     )

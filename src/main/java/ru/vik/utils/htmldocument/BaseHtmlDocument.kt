@@ -53,9 +53,9 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
             Tag.Type.SECTION   -> {
                 val section = if (isRoot) state.section else Section()
                 config?.also {
-                    it.onSetBlockStyle?.invoke(tag, section.bs)
-                    it.onSetParagraphStyle?.invoke(tag, section.ps)
-                    it.onSetCharacterStyle?.invoke(tag, section.cs)
+                    it.onSetBlockStyle?.invoke(tag, section.blockStyle)
+                    it.onSetParagraphStyle?.invoke(tag, section.paragraphStyle)
+                    it.onSetCharacterStyle?.invoke(tag, section.characterStyle)
                 }
 
                 var parent: Section? = null
@@ -89,9 +89,9 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                 val paragraph = appendParagraph(state, tag.text)
 
                 config?.also {
-                    it.onSetBlockStyle?.invoke(tag, paragraph.bs)
-                    it.onSetParagraphStyle?.invoke(tag, paragraph.ps)
-                    it.onSetCharacterStyle?.invoke(tag, paragraph.cs)
+                    it.onSetBlockStyle?.invoke(tag, paragraph.blockStyle)
+                    it.onSetParagraphStyle?.invoke(tag, paragraph.paragraphStyle)
+                    it.onSetCharacterStyle?.invoke(tag, paragraph.characterStyle)
                 }
 
                 for (child in tag.children) {
@@ -112,8 +112,8 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                 if (tag.name.isNotEmpty()) {
                     span = Paragraph.Span()
                     config?.also {
-                        it.onSetBlockStyle?.invoke(tag, span.bs)
-                        it.onSetCharacterStyle?.invoke(tag, span.cs)
+                        it.onSetBlockStyle?.invoke(tag, span.blockStyle)
+                        it.onSetCharacterStyle?.invoke(tag, span.characterStyle)
                     }
                 }
 
@@ -153,7 +153,7 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
 
         // Переносим в созданный абзац открытые спаны
         for (span in state.openedSpans) {
-            paragraph.addSpan(Paragraph.Span(span.bs.clone(), span.cs.clone(), 0))
+            paragraph.addSpan(Paragraph.Span(span.blockStyle.clone(), span.characterStyle.clone(), 0))
         }
 
         // Закрываем текущий абзац

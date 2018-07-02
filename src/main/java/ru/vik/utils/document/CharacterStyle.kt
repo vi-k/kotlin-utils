@@ -16,46 +16,30 @@ class CharacterStyle(var font: String? = null,                // Названи�
         NONE, ALL_CAPS, SMALL_CAPS
     }
 
-    fun attach(cs: CharacterStyle): CharacterStyle {
-        cs.font?.also { this.font = it }
+    fun attach(characterStyle: CharacterStyle): CharacterStyle {
+        characterStyle.font?.also { this.font = it }
 
         // Смещение базовой линии рассчитываем до того, как изменим шрифт
-        val size = cs.baselineShift.toPixels(this.size)
+        val size = characterStyle.baselineShift.tryToPixels(this.size)
         when {
-            size.isRelative()               -> this.baselineShift = cs.baselineShift
+            size.isRelative()               -> this.baselineShift = characterStyle.baselineShift
             this.baselineShift.isRelative() -> this.baselineShift = size
             else                            -> {
                 this.baselineShift = Size(this.baselineShift.size + size.size, Size.Units.PX)
             }
         }
 
-        this.size = cs.size.toPixels(this.size)
-        this.scaleX *= cs.scaleX
-        cs.bold?.also { this.bold = it }
-        cs.italic?.also { this.italic = it }
-        cs.underline?.also { this.underline = it }
-        cs.strike?.also { this.strike = it }
-        cs.color?.also { this.color = it }
-
-        cs.letterSpacing?.also { this.letterSpacing = it }
-        cs.allCaps?.also { this.allCaps = it }
+        this.size = characterStyle.size.tryToPixels(this.size)
+        this.scaleX *= characterStyle.scaleX
+        characterStyle.bold?.also { this.bold = it }
+        characterStyle.italic?.also { this.italic = it }
+        characterStyle.underline?.also { this.underline = it }
+        characterStyle.strike?.also { this.strike = it }
+        characterStyle.color?.also { this.color = it }
+        characterStyle.letterSpacing?.also { this.letterSpacing = it }
+        characterStyle.allCaps?.also { this.allCaps = it }
         return this
     }
-
-//    fun cloneAndAttach(cs: CharacterStyle) = CharacterStyle(
-//            font = cs.font ?: this.font,
-//            size = cs.size ?: this.size,
-//            scale = this.scale * cs.scale,
-//            scaleX = this.scaleX * cs.scaleX,
-//            bold = cs.bold ?: this.bold,
-//            italic = cs.italic ?: this.italic,
-//            underline = cs.underline ?: this.underline,
-//            strike = cs.strike ?: this.strike,
-//            color = cs.color ?: this.color,
-//            baselineShift = cs.baselineShift ?: this.baselineShift,
-//            letterSpacing = cs.letterSpacing ?: this.letterSpacing,
-//            allCaps = cs.allCaps ?: this.allCaps
-//    )
 
     fun clone() = CharacterStyle(
             font = this.font,

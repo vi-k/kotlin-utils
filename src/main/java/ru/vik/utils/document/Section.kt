@@ -2,9 +2,9 @@ package ru.vik.utils.document
 
 class Section : ParagraphItem {
     var parent: Section? = null
-    val bs: BlockStyle = BlockStyle()
-    val ps: ParagraphStyle = ParagraphStyle()
-    val cs: CharacterStyle = CharacterStyle()
+    val blockStyle = BlockStyle()
+    val paragraphStyle = ParagraphStyle()
+    val characterStyle = CharacterStyle()
 
     val paragraphs = mutableListOf<ParagraphItem>()
 

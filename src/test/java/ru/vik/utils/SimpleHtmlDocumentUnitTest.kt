@@ -52,9 +52,9 @@ class SimpleHtmlDocumentUnitTest {
                 ((parser.root!!.paragraphs[3] as? Section)!!.paragraphs[2] as? Paragraph)!!.text.toString())
 
         // Проверка пересекающихся тегов
-        parser.setHtml("<i>i,<b>bi,<s>bis,</i>bs,</b>s</s> <div>1<p>2</div>3</p>")
+        parser.setHtml("<i>i,<b>bi,<s>bis,</i>blockStyle,</b>s</s> <div>1<p>2</div>3</p>")
         assertEquals(3, parser.root!!.paragraphs.size)
-        assertEquals("i,bi,bis,bs,s",
+        assertEquals("i,bi,bis,blockStyle,s",
                 (parser.root!!.paragraphs[0] as? Paragraph)!!.text.toString())
         assertEquals(2, (parser.root!!.paragraphs[1] as? Section)!!.paragraphs.size)
         assertEquals("1",
