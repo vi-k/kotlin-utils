@@ -1,13 +1,11 @@
 package ru.vik.utils.htmldocument
 
-import ru.vik.utils.document.BlockStyle
-import ru.vik.utils.document.CharacterStyle
-import ru.vik.utils.document.Document
-import ru.vik.utils.document.Paragraph
-import ru.vik.utils.document.ParagraphStyle
-import ru.vik.utils.document.Section
+import ru.vik.utils.color.Color
+import ru.vik.utils.color.setA
+import ru.vik.utils.document.*
 import ru.vik.utils.html.BaseHtml
 import ru.vik.utils.html.Tag
+import ru.vik.utils.math.simpleRoundToInt
 
 typealias SetBlockStyleHandler = (Tag, BlockStyle) -> Unit
 typealias SetParagraphStyleHandler = (Tag, ParagraphStyle) -> Unit
@@ -182,30 +180,73 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
     }
 
     companion object {
-        fun getAttrColor(attr: String): Int {
-            var color = 0
-            if (attr.isNotEmpty()) {
-                if (attr[0] == '#') {
-                    val value = attr.substring(1)
-                    if (value.length == 6) {
-                        value.toIntOrNull(16)?.also {
-                            color = it or -16777216 // alpha = 255
-                        }
-                    } else if (value.length == 3) {
-                        value.toIntOrNull(16)?.also {
-                            val r = (it and 0x000f00)
-                            val g = (it and 0x0000f0)
-                            val b = (it and 0x00000f)
-                            color = (r shl 12) or (r shl 8) or
-                                    (g shl 8) or (g shl 4) or
-                                    (b shl 4) or b or (0xff shl 24) // alpha = 255
-//                                    -16777216 // alpha = 255
+        private val reColorNum: Regex by lazy {
+            Regex("""^#([0-9a-f]{3,6})$""", RegexOption.IGNORE_CASE)
+        }
+
+        private val reColorFun: Regex by lazy {
+            Regex("""^(rgba?)\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*(\d+(\.\d*)?)\s*)?\)$""",
+                    RegexOption.IGNORE_CASE)
+        }
+
+        private val reSize: Regex by lazy {
+            Regex("""^(\d+(\.\d*)?)(|px|em|%)$""", RegexOption.IGNORE_CASE)
+        }
+
+        fun getAttrColor(value: String): Int? {
+            reColorNum.find(value)?.also {
+                val num = it.groupValues[1]
+                if (num.length == 6) {
+                    num.toIntOrNull(16)?.also { return it.setA(255) }
+                } else if (num.length == 3) {
+                    num.toIntOrNull(16)?.also {
+                        val r = it and 0x000f00
+                        val g = it and 0x0000f0
+                        val b = it and 0x00000f
+                        return (0xff shl 24) or
+                                (r shl 12) or (r shl 8) or
+                                (g shl 8) or (g shl 4) or
+                                (b shl 4) or b
+                    }
+                }
+
+                return null
+            }
+
+            reColorFun.find(value)?.also {
+                it.groupValues[2].toIntOrNull()?.also { mr ->
+                    it.groupValues[3].toIntOrNull()?.also { mg ->
+                        it.groupValues[4].toIntOrNull()?.also { mb ->
+                            val r = Math.min(Math.max(mr, 0), 255)
+                            val g = Math.min(Math.max(mg, 0), 255)
+                            val b = Math.min(Math.max(mb, 0), 255)
+                            var a = 255
+
+                            it.groupValues[6].toFloatOrNull()?.also { ma ->
+                                a = Math.min(Math.max((ma * 255f).simpleRoundToInt(), 0), 255)
+                            }
+
+                            return Color.argb(a, r, g, b)
                         }
                     }
                 }
             }
 
-            return color
+            return null
+        }
+
+        fun getAttrSize(value: String): Size? {
+            reSize.find(value)?.also {
+                it.groupValues[1].toFloatOrNull()?.also { num ->
+                    return when (it.groupValues[3].toLowerCase()) {
+                        "%"  -> Size.percent(num)
+                        "em" -> Size.em(num)
+                        else -> Size.px(num)
+                    }
+                }
+            }
+
+            return null
         }
     }
 }

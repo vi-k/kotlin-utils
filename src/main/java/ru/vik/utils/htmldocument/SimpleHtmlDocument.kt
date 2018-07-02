@@ -1,18 +1,14 @@
 package ru.vik.utils.htmldocument
 
-import ru.vik.utils.document.BlockStyle
 import ru.vik.utils.html.Tag
-import ru.vik.utils.document.Border
-import ru.vik.utils.document.CharacterStyle
-import ru.vik.utils.document.ParagraphStyle
 import ru.vik.utils.color.Color
+import ru.vik.utils.document.*
 
-open class SimpleHtmlDocument
-    : BaseHtmlDocument() {
+open class SimpleHtmlDocument : BaseHtmlDocument() {
 
     private fun setBSFromAttributes(tag: Tag, bs: BlockStyle) {
         tag.attributes["bgColor"]?.also {
-            bs.color = BaseHtmlDocument.getAttrColor(it)
+            getAttrColor(it)?.also { bs.color = it }
         }
     }
 
@@ -66,8 +62,8 @@ open class SimpleHtmlDocument
             if (it == "csl") cs.font = "ponomar"
         }
 
-        tag.attributes["size"]?.toFloatOrNull()?.also {
-            cs.size = it
+        tag.attributes["size"]?.also {
+            getAttrSize(it)?.also { cs.size = it }
         }
     }
 
@@ -115,7 +111,7 @@ open class SimpleHtmlDocument
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = { tag, cs ->
-                    cs.scale = 1.6F
+                    cs.size = Size.em(1.6f)
                     cs.bold = true
                     setCSFromAttributes(tag, cs)
                 }))
@@ -125,7 +121,7 @@ open class SimpleHtmlDocument
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = { tag, cs ->
-                    cs.scale = 1.4F
+                    cs.size = Size.em(1.4f)
                     cs.bold = true
                     setCSFromAttributes(tag, cs)
                 }))
@@ -135,7 +131,7 @@ open class SimpleHtmlDocument
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = { tag, cs ->
-                    cs.scale = 1.2F
+                    cs.size = Size.em(1.2f)
                     cs.bold = true
                     setCSFromAttributes(tag, cs)
                 }))
@@ -181,8 +177,8 @@ open class SimpleHtmlDocument
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, cs ->
-                    //                    cs.baselineShift = cs.size ?:  * 0.2F
-                    cs.scale = 0.7F
+                    cs.size = Size.em(0.85f)
+                    cs.baselineShift = Size.em(0.25f)
                     setCSFromAttributes(tag, cs)
                 }))
 
@@ -190,8 +186,8 @@ open class SimpleHtmlDocument
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, cs ->
-                    // cs.baselineShift = cs.size ?:  * 0.2F
-                    cs.scale = 0.7F
+                    cs.size = Size.em(0.85f)
+                    cs.baselineShift = Size.em(-0.4f)
                     setCSFromAttributes(tag, cs)
                 }))
 
@@ -199,7 +195,7 @@ open class SimpleHtmlDocument
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, cs ->
-                    cs.scale = 0.85F
+                    cs.size = Size.em(0.85f)
                     setCSFromAttributes(tag, cs)
                 }))
 
