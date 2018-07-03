@@ -1,16 +1,20 @@
 package ru.vik.utils.document
 
-open class Border (
-        val width: Float = 0f,
-        val color: Int = 0,
-        val type: Type = Type.SOLID
-) {
-    enum class Type {
-        SOLID
-    }
+open class Border(size: Float,
+                  units: Units,
+                  val color: Int,
+                  val type: Type = Type.SOLID) : Size(size, units) {
+    enum class Type { SOLID }
 
     // Клонирование не нужно, пока тип иммутабельный
 //    fun clone(): Border {
-//        return Border(this.width, this.color, this.units)
 //    }
+
+    companion object {
+        fun dp(size: Float, color: Int, type: Type = Type.SOLID) =
+                Border(size, Units.DP, color, type)
+
+        fun em(size: Float, color: Int, type: Type = Type.SOLID) =
+                Border(size, Units.EM, color, type)
+    }
 }

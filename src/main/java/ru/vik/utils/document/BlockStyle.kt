@@ -1,119 +1,125 @@
 package ru.vik.utils.document
 
-open class BlockStyle(var margin: Boundary<Float> = Boundary(0f, 0f, 0f, 0f),
-                      var padding: Boundary<Float> = Boundary(0f, 0f, 0f, 0f),
-                      var border: Boundary<Border?> = Boundary(null, null, null, null),
+open class BlockStyle(var marginTop: Size? = null,
+                      var marginRight: Size? = null,
+                      var marginBottom: Size? = null,
+                      var marginLeft: Size? = null,
+                      var borderTop: Border? = null,
+                      var borderRight: Border? = null,
+                      var borderBottom: Border? = null,
+                      var borderLeft: Border? = null,
+                      var paddingTop: Size? = null,
+                      var paddingRight: Size? = null,
+                      var paddingBottom: Size? = null,
+                      var paddingLeft: Size? = null,
                       var color: Int = 0
 ) {
     fun clone() = BlockStyle(
-            margin = this.margin.clone(),
-            padding = this.padding.clone(),
-            border = this.border.clone(),
+            marginTop = this.marginTop,
+            marginRight = this.marginRight,
+            marginBottom = this.marginBottom,
+            marginLeft = this.marginLeft,
+            borderTop = this.borderTop,
+            borderRight = this.borderRight,
+            borderBottom = this.borderBottom,
+            borderLeft = this.borderLeft,
+            paddingTop = this.paddingTop,
+            paddingRight = this.paddingRight,
+            paddingBottom = this.paddingBottom,
+            paddingLeft = this.paddingLeft,
             color = this.color
     )
 
-    fun setMargin(margin: Float) {
-        this.margin.top = margin
-        this.margin.right = margin
-        this.margin.bottom = margin
-        this.margin.left = margin
+    fun setMargin(margin: Size?) {
+        this.marginTop = margin
+        this.marginRight = margin
+        this.marginBottom = margin
+        this.marginLeft = margin
     }
 
-    fun setMargin(topAndBottom: Float, leftAndRight: Float) {
-        this.margin.top = topAndBottom
-        this.margin.right = leftAndRight
-        this.margin.bottom = topAndBottom
-        this.margin.left = leftAndRight
+    fun setMargin(topAndBottom: Size?, leftAndRight: Size?) {
+        this.marginTop = topAndBottom
+        this.marginRight = leftAndRight
+        this.marginBottom = topAndBottom
+        this.marginLeft = leftAndRight
     }
 
-    fun setMargin(top: Float, leftAndRight: Float, bottom: Float) {
-        this.margin.top = top
-        this.margin.right = leftAndRight
-        this.margin.bottom = bottom
-        this.margin.left = leftAndRight
+    fun setMargin(top: Size?, leftAndRight: Size?, bottom: Size?) {
+        this.marginTop = top
+        this.marginRight = leftAndRight
+        this.marginBottom = bottom
+        this.marginLeft = leftAndRight
     }
 
-    fun setMargin(top: Float, right: Float, bottom: Float, left: Float) {
-        this.margin.top = top
-        this.margin.right = right
-        this.margin.bottom = bottom
-        this.margin.left = left
+    fun setMargin(top: Size?, right: Size?, bottom: Size?, left: Size?) {
+        this.marginTop = top
+        this.marginRight = right
+        this.marginBottom = bottom
+        this.marginLeft = left
     }
 
-    fun setPadding(padding: Float) {
-        this.padding.top = padding
-        this.padding.right = padding
-        this.padding.bottom = padding
-        this.padding.left = padding
+    fun setPadding(padding: Size?) {
+        this.paddingTop = padding
+        this.paddingRight = padding
+        this.paddingBottom = padding
+        this.paddingLeft = padding
     }
 
-    fun setPadding(topAndBottom: Float, leftAndRight: Float) {
-        this.padding.top = topAndBottom
-        this.padding.right = leftAndRight
-        this.padding.bottom = topAndBottom
-        this.padding.left = leftAndRight
+    fun setPadding(topAndBottom: Size?, leftAndRight: Size?) {
+        this.paddingTop = topAndBottom
+        this.paddingRight = leftAndRight
+        this.paddingBottom = topAndBottom
+        this.paddingLeft = leftAndRight
     }
 
-    fun setPadding(top: Float, leftAndRight: Float, bottom: Float) {
-        this.padding.top = top
-        this.padding.right = leftAndRight
-        this.padding.bottom = bottom
-        this.padding.left = leftAndRight
+    fun setPadding(top: Size?, leftAndRight: Size?, bottom: Size?) {
+        this.paddingTop = top
+        this.paddingRight = leftAndRight
+        this.paddingBottom = bottom
+        this.paddingLeft = leftAndRight
     }
 
-    fun setPadding(top: Float, right: Float, bottom: Float, left: Float) {
-        this.padding.top = top
-        this.padding.right = right
-        this.padding.bottom = bottom
-        this.padding.left = left
+    fun setPadding(top: Size?, right: Size?, bottom: Size?, left: Size?) {
+        this.paddingTop = top
+        this.paddingRight = right
+        this.paddingBottom = bottom
+        this.paddingLeft = left
     }
 
-    val borderTopWidth
-        get() = border.top?.width ?: 0f
-
-    val borderRightWidth
-        get() = border.right?.width ?: 0f
-
-    val borderBottomWidth
-        get() = border.bottom?.width ?: 0f
-
-    val borderLeftWidth
-        get() = border.left?.width ?: 0f
-
-    fun setBorder(border: Border) {
-        this.border.top = border
-        this.border.right = border
-        this.border.bottom = border
-        this.border.left = border
+    fun setBorder(border: Border?) {
+        this.borderTop = border
+        this.borderRight = border
+        this.borderBottom = border
+        this.borderLeft = border
     }
 
     fun setBorder(topAndBottom: Border?, leftAndRight: Border?) {
-        this.border.top = topAndBottom
-        this.border.right = leftAndRight
-        this.border.bottom = topAndBottom
-        this.border.left = leftAndRight
+        this.borderTop = topAndBottom
+        this.borderRight = leftAndRight
+        this.borderBottom = topAndBottom
+        this.borderLeft = leftAndRight
     }
 
     fun setBorder(top: Border?, leftAndRight: Border?, bottom: Border?) {
-        this.border.top = top
-        this.border.right = leftAndRight
-        this.border.bottom = bottom
-        this.border.left = leftAndRight
+        this.borderTop = top
+        this.borderRight = leftAndRight
+        this.borderBottom = bottom
+        this.borderLeft = leftAndRight
     }
 
     fun setBorder(top: Border?, right: Border?, bottom: Border?, left: Border?) {
-        this.border.top = top
-        this.border.right = right
-        this.border.bottom = bottom
-        this.border.left = left
+        this.borderTop = top
+        this.borderRight = right
+        this.borderBottom = bottom
+        this.borderLeft = left
     }
 
     fun needForDraw(): Boolean {
         return (this.color != 0 ||
-                this.border.top?.let { it.color != 0 && it.width > 0f} == true &&
-                this.border.right?.let { it.color != 0 && it.width > 0f} == true &&
-                this.border.bottom?.let { it.color != 0 && it.width > 0f} == true &&
-                this.border.left?.let { it.color != 0 && it.width > 0f} == true)
+                this.borderTop?.let { it.color != 0 && it.size != 0f } == true &&
+                this.borderRight?.let { it.color != 0 && it.size != 0f } == true &&
+                this.borderBottom?.let { it.color != 0 && it.size != 0f } == true &&
+                this.borderLeft?.let { it.color != 0 && it.size != 0f } == true)
     }
 
     companion object {

@@ -8,7 +8,7 @@ package ru.vik.utils.document
  * EM и RATIO только там, где изначально размер относительно шрифта не подразумевается, например,
  * в indent, margin, padding и border.
  */
-data class Size(val size: Float, val units: Units) {
+open class Size(val size: Float, val units: Units) {
     enum class Units {
         DP, EM, RATIO
     }
@@ -18,15 +18,19 @@ data class Size(val size: Float, val units: Units) {
         fun em(size: Float) = Size(size, Units.EM)
         fun ratio(size: Float) = Size(size, Units.RATIO)
         fun percent(size: Float) = Size(size / 100f, Units.RATIO)
-    }
 
-    fun clone() = Size(
-            size = this.size,
-            units = this.units
-    )
+        fun toPixels(size: Size?, density: Float, fontSize: Float, parentSize: Float = 0f): Float {
+            return size?.toPixels(density, fontSize, parentSize) ?: 0f
+        }
+
+        fun isEmpty(size: Size?) = size?.isEmpty() ?: true
+        fun isNotEmpty(size: Size?) = size?.isNotEmpty() ?: false
+    }
 
     fun isAbsolute() = this.units == Units.DP
     fun isRelative() = this.units != Units.DP
+    fun isEmpty() = this.size == 0f
+    fun isNotEmpty() = this.size != 0f
 
     /**
      * Возврат значения в пикселях или значения по-умолчанию.
@@ -69,7 +73,7 @@ data class Size(val size: Float, val units: Units) {
      * быть уже приведён к плотности устройства).
      * @return Вычисленный размер в пикселях.
      */
-    fun toPixels(density: Float, fontSize: Float, parentSize: Float): Float {
+    fun toPixels(density: Float, fontSize: Float, parentSize: Float = 0f): Float {
         return when (this.units) {
             Units.DP    -> this.size * density
             Units.EM    -> this.size * fontSize

@@ -193,6 +193,9 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
             Regex("""^(-?\d+(\.\d*)?)(|px|em|%)$""", RegexOption.IGNORE_CASE)
         }
 
+        /**
+         * Преобразование аттрибута в цвет.
+         */
         fun getAttrColor(value: String): Int? {
             reColorNum.find(value)?.also {
                 val num = it.groupValues[1]
@@ -235,11 +238,14 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
             return null
         }
 
-        fun getAttrSize(value: String): Size? {
+        /**
+         * Преобразование аттрибута в размер с учётом единиц измерения: px, em и %.
+         */
+        fun getAttrSize(value: String, forbidPercent: Boolean = false): Size? {
             reSize.find(value)?.also {
                 it.groupValues[1].toFloatOrNull()?.also { num ->
                     return when (it.groupValues[3].toLowerCase()) {
-                        "%"  -> Size.percent(num)
+                        "%"  -> if (forbidPercent) null else Size.percent(num)
                         "em" -> Size.em(num)
                         else -> Size.dp(num)
                     }

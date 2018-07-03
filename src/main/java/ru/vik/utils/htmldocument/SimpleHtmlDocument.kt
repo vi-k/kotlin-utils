@@ -74,16 +74,16 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("div", TextConfig(
                 type = Tag.Type.SECTION,
                 onSetBlockStyle = { tag, blockStyle ->
-                    blockStyle.setMargin(4f)
+                    blockStyle.setMargin(Size.dp(4f))
                     blockStyle.setBorder(
-                            Border(7f, Color.rgb(0, 255, 0)),
-                            Border(3f, Color.rgb(255, 0, 0)))
+                            Border.dp(7f, Color.rgb(0, 255, 0)),
+                            Border.dp(3f, Color.rgb(255, 0, 0)))
 //                    blockStyle.setBorder(
 //                            Border(7f, Color.argb(128, 0, 0, 255)),
 //                            Border(7f, Color.argb(0, 255, 255, 255)),
 //                            Border(3f, Color.argb(128, 255, 0, 0)),
 //                            Border(2f, Color.argb(128, 0, 0, 255)))
-                    blockStyle.setPadding(4f, 4f)
+                    blockStyle.setPadding(Size.dp(4f), Size.dp(4f))
                     setBSFromAttributes(tag, blockStyle)
                 },
                 onSetParagraphStyle = ::setPSFromAttributes,
@@ -93,8 +93,8 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("p", TextConfig(
                 type = Tag.Type.PARAGRAPH,
                 onSetBlockStyle = { tag, blockStyle ->
-                    blockStyle.setMargin(2f)
-                    blockStyle.setBorder(Border(1f, Color.rgb(160, 160, 160)))
+                    blockStyle.setMargin(Size.dp(2f))
+                    blockStyle.setBorder(Border.dp(1f, Color.rgb(160, 160, 160)))
 //                    blockStyle.setBorder(
 //                            Border(7f, Color.argb(255, 0, 0, 255)),
 //                            Border(7f, Color.argb(0, 255, 255, 255)),
