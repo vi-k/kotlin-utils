@@ -4,8 +4,7 @@ import ru.vik.utils.parser.StringParserEx
 
 open class HtmlParser(source: CharSequence,
                       start: Int = 0,
-                      end: Int = source.length)
-    : StringParserEx(source, start, end) {
+                      end: Int = source.length) : StringParserEx(source, start, end) {
 
     private var tag: Tag? = null
     private var lastTagWithEndSpace: Tag? = null
@@ -63,8 +62,7 @@ open class HtmlParser(source: CharSequence,
                 // Открывающий тег
                 var isOk = false
                 val tagName = getString(tagStart)
-                val tag = Tag(tagName,
-                        Tag.Type.UNKNOWN)
+                val tag = Tag(tagName, Tag.Type.UNKNOWN)
 
                 loop@ while (!eof()) {
                     parseSpaces()
@@ -148,6 +146,7 @@ open class HtmlParser(source: CharSequence,
                             lastTagTrimEnd()
                             this.needForTrimStart = true
                         }
+
                         this.tag = closeTag(tag)
                         return true
                     }
@@ -156,6 +155,7 @@ open class HtmlParser(source: CharSequence,
         }
 
         addParsed(parseStart)
+
         return false
     }
 
@@ -191,18 +191,22 @@ open class HtmlParser(source: CharSequence,
 
     private fun lastTagTrimEnd() {
         val tag = this.lastTagWithEndSpace
+
         if (tag != null) {
             tag.text = trimEnd(tag.text)
+
             // Удаляем пустой фиктивный тег
             if (tag.text.isEmpty() && tag.name.isEmpty()) {
                 tag.parent?.children?.remove(tag)
             }
+
             this.lastTagWithEndSpace = null
         }
     }
 
     private fun setTextToTag(tag: Tag, tagText: String) {
         var text = tagText
+
         if (text.isNotEmpty()) {
             if ((this.needForTrimStart || this.lastTagWithEndSpace != null)
                 && isSpace(text.first())) {
@@ -228,9 +232,7 @@ open class HtmlParser(source: CharSequence,
         // Пытаемся прилепить текст к существующему тегу, не добавляя новых, если это возможно
         if (tag.children.isEmpty() || tag.children.last().name.isEmpty()) {
             if (text.isNotEmpty()) {
-                if (tag.children.isNotEmpty()) {
-                    tag = tag.children.last()
-                }
+                if (tag.children.isNotEmpty()) tag = tag.children.last()
 
 //                if (isSpace(text.first()) && tag.text.isNotEmpty() && isSpace(tag.text.last())) {
                 // Убираем лишние пробелы между тегами
@@ -247,13 +249,12 @@ open class HtmlParser(source: CharSequence,
         }
         // Если прилепить текст к существующему тегу не удаётся, добавляем фиктивный тег
         else {
-            val child = Tag("",
-                    Tag.Type.CHARACTER)
+            val child = Tag("", Tag.Type.CHARACTER)
+
             child.closed = true
             setTextToTag(child, text)
-            if (child.text.isNotEmpty()) {
-                tag.add(child)
-            }
+
+            if (child.text.isNotEmpty()) tag.add(child)
         }
     }
 
@@ -265,15 +266,12 @@ open class HtmlParser(source: CharSequence,
         while (!parser.eof()) {
             var char = parser.getAndNext()
 
-            if (char == '&') {
-                char = parser.parseAmp()
-            }
+            if (char == '&') char = parser.parseAmp()
 
             if (isSpace(char)) {
                 // Заменяем все пробелы на ' ', лишние пробелы пропускаем
-                if (!lastCharIsSpace) {
-                    output.append(' ')
-                }
+                if (!lastCharIsSpace) output.append(' ')
+
                 parser.parseSpaces()
                 lastCharIsSpace = true
             } else {
@@ -292,11 +290,7 @@ open class HtmlParser(source: CharSequence,
         while (!parser.eof()) {
             val char = parser.getAndNext()
 
-            if (char != '&') {
-                output.append(char)
-            } else {
-                output.append(parser.parseAmp())
-            }
+            output.append(if (char != '&') char else parser.parseAmp())
         }
 
         return output.toString()
@@ -348,69 +342,65 @@ open class HtmlParser(source: CharSequence,
 
     private fun parseTagNameFirst(): Boolean {
         start()
-        if (!eof() && isTagNameFirst(
-                        get())) {
-            next()
-        }
+
+        if (!eof() && isTagNameFirst(get())) next()
+
         return parsed()
     }
 
     private fun parseTagNamePart(): Boolean {
         start()
-        if (!eof() && isTagNamePart(get())) {
-            next()
-        }
+
+        if (!eof() && isTagNamePart(get())) next()
+
         return parsed()
     }
 
     private fun parseAttrNameFirst(): Boolean {
         start()
-        if (!eof() && isAttrNameFirst(
-                        get())) {
-            next()
-        }
+
+        if (!eof() && isAttrNameFirst(get())) next()
+
         return parsed()
     }
 
     private fun parseAttrNamePart(): Boolean {
         start()
-        if (!eof() && isAttrNamePart(
-                        get())) {
-            next()
-        }
+
+        if (!eof() && isAttrNamePart(get())) next()
+
         return parsed()
     }
 
     private fun parseAmpNameFirst(): Boolean {
         start()
-        if (!eof() && isAmpNameFirst(
-                        get())) {
-            next()
-        }
+
+        if (!eof() && isAmpNameFirst(get())) next()
+
         return parsed()
     }
 
     private fun parseAmpNamePart(): Boolean {
         start()
-        if (!eof() && isAmpNamePart(get())) {
-            next()
-        }
+
+        if (!eof() && isAmpNamePart(get())) next()
+
         return parsed()
     }
 
     private fun parseSpace(): Boolean {
         start()
-        if (!eof() && isSpace(get())) {
-            next()
-        }
+
+        if (!eof() && isSpace(get())) next()
+
         return parsed()
     }
 
     private fun parseNoSpace(): Boolean {
         start()
-        if (!eof() && !isSpace(get())) {
-            next()
-        }
+
+        if (!eof() && !isSpace(get())) next()
+
         return parsed()
     }
 
@@ -425,7 +415,8 @@ open class HtmlParser(source: CharSequence,
         val parseStart = start()
 
         if (parseTagNameFirst()) {
-            while (parseTagNamePart());
+            while (parseTagNamePart()) {
+            }
         }
 
         return parsed(parseStart)
@@ -436,7 +427,8 @@ open class HtmlParser(source: CharSequence,
         val parseStart = start()
 
         if (parseAttrNameFirst()) {
-            while (parseAttrNamePart());
+            while (parseAttrNamePart()) {
+            }
         }
 
         return parsed(parseStart)
@@ -447,7 +439,8 @@ open class HtmlParser(source: CharSequence,
         val parseStart = start()
 
         if (parseAmpNameFirst()) {
-            while (parseAmpNamePart());
+            while (parseAmpNamePart()) {
+            }
         }
 
         return parsed(parseStart)
@@ -461,7 +454,8 @@ open class HtmlParser(source: CharSequence,
             val quoteChar = get()
             if (quoteChar == '\'' || quoteChar == '"') {
                 next()
-                while (parseStringChar(quoteChar));
+                while (parseStringChar(quoteChar)) {
+                }
             }
         }
 
@@ -485,8 +479,8 @@ open class HtmlParser(source: CharSequence,
     private fun parseSpaces(): Boolean {
         val parseStart = start()
 
-        while (parseSpace())
-        ;
+        while (parseSpace()) {
+        }
 
         return parsed(parseStart)
     }
@@ -527,8 +521,7 @@ open class HtmlParser(source: CharSequence,
 
                 // "Дети"
                 for (child in tag.children) {
-                    tagToString(output,
-                            child)
+                    tagToString(output, child)
                 }
 
                 // Завершающий тег
@@ -545,8 +538,8 @@ open class HtmlParser(source: CharSequence,
         }
 
         fun isTagNamePart(char: Char): Boolean {
-            return char in 'A'..'Z' || char in 'a'..'z'
-                   || char == '-' || char == '_' || char in '0'..'9'
+            return char in 'A'..'Z' || char in 'a'..'z' ||
+                   char == '-' || char == '_' || char in '0'..'9'
         }
 
         fun isAttrNameFirst(char: Char): Boolean {
