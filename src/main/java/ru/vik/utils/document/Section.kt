@@ -1,6 +1,6 @@
 package ru.vik.utils.document
 
-class Section : ParagraphItem {
+open class Section : ParagraphItem {
     var parent: Section? = null
     val blockStyle = BlockStyle()
     val paragraphStyle = ParagraphStyle()
@@ -20,5 +20,9 @@ class Section : ParagraphItem {
     fun addParagraph(paragraph: Paragraph) {
         paragraph.parent = this
         this.paragraphs.add(paragraph)
+    }
+
+    fun clear() {
+        this.paragraphs.clear()
     }
 }

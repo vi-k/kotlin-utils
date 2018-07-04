@@ -15,20 +15,20 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
     : Document() {
 
     class TextConfig(type: Tag.Type,
-                     val onSetBlockStyle: SetBlockStyleHandler? = null,
-                     val onSetParagraphStyle: SetParagraphStyleHandler? = null,
-                     val onSetCharacterStyle: SetCharacterStyleHandler? = null
+            val onSetBlockStyle: SetBlockStyleHandler? = null,
+            val onSetParagraphStyle: SetParagraphStyleHandler? = null,
+            val onSetCharacterStyle: SetCharacterStyleHandler? = null
     ) : BaseHtml.TagConfig(type)
 
     private class State(var section: Section,
-                        var paragraph: Paragraph? = null,
-                        val openedSpans: MutableList<Paragraph.Span> = mutableListOf())
+            var paragraph: Paragraph? = null,
+            val openedSpans: MutableList<Paragraph.Span> = mutableListOf())
 
-    fun setHtml(html: String) {
-        this.html.parse(html)
+    override fun setText(text: String) {
+        this.html.parse(text)
 
-        this.root = Section()
-        val state = State(this.root!!)
+        this.clear()
+        val state = State(this)
 
         tagToText(this.html.root!!, state, true)
     }
@@ -49,8 +49,9 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
         // Создаём элемент и заполняем его свойства
         when (tag.type) {
 
-        // Добавляем раздел
-            Tag.Type.SECTION   -> {
+            Tag.Type.SECTION -> {
+                // Добавляем раздел
+
                 val section = if (isRoot) state.section else Section()
                 config?.also {
                     it.onSetBlockStyle?.invoke(tag, section.blockStyle)
@@ -84,8 +85,9 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                 }
             }
 
-        // Добавляем абзац
             Tag.Type.PARAGRAPH -> {
+                // Добавляем абзац
+
                 val paragraph = appendParagraph(state, tag.text)
 
                 config?.also {
@@ -101,12 +103,13 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                 closeParagraph(state)
             }
 
-        // Добавляем стиль символов (спан). Спан в HTML может содержать в себе абзацы
-        // и пересекать границы абзацев. У нас же он, наоборот, может находиться только внутри
-        // абзаца. Поэтому дробим спан, разделяя его по абзацам. Открытые спаны сохраняем
-        // в state.openedSpans
             Tag.Type.CHARACTER,
-            Tag.Type.VOID      -> {
+            Tag.Type.VOID -> {
+                // Добавляем стиль символов (спан). Спан в HTML может содержать в себе абзацы
+                // и пересекать границы абзацев. У нас же он, наоборот, может находиться только внутри
+                // абзаца. Поэтому дробим спан, разделяя его по абзацам. Открытые спаны сохраняем
+                // в state.openedSpans
+
                 var span: Paragraph.Span? = null
 
                 if (tag.name.isNotEmpty()) {
@@ -137,12 +140,12 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                 }
             }
 
-            Tag.Type.BR        -> {
+            Tag.Type.BR -> {
                 val paragraph = state.paragraph ?: appendParagraph(state)
                 paragraph.text.append('\n')
             }
 
-            Tag.Type.UNKNOWN   -> {
+            Tag.Type.UNKNOWN -> {
             }
         }
     }
@@ -153,7 +156,8 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
 
         // Переносим в созданный абзац открытые спаны
         for (span in state.openedSpans) {
-            paragraph.addSpan(Paragraph.Span(span.blockStyle.clone(), span.characterStyle.clone(), 0))
+            paragraph.addSpan(
+                    Paragraph.Span(span.blockStyle.clone(), span.characterStyle.clone(), 0))
         }
 
         // Закрываем текущий абзац
@@ -218,7 +222,7 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
 
             reColorFun.find(value)?.also { res ->
                 res.groupValues[2].toIntOrNull()?.also { mr ->
-                   res.groupValues[3].toIntOrNull()?.also { mg ->
+                    res.groupValues[3].toIntOrNull()?.also { mg ->
                         res.groupValues[4].toIntOrNull()?.also { mb ->
                             val r = Math.min(Math.max(mr, 0), 255)
                             val g = Math.min(Math.max(mg, 0), 255)
@@ -253,7 +257,7 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
             reSize.find(value)?.also {
                 it.groupValues[1].toFloatOrNull()?.also { num ->
                     return when (it.groupValues[3].toLowerCase()) {
-                        "%"  -> if (forbidPercent) null else Size.percent(num)
+                        "%" -> if (forbidPercent) null else Size.percent(num)
                         "em" -> Size.em(num)
                         else -> Size.dp(num)
                     }

@@ -1,5 +1,6 @@
 package ru.vik.utils.document
 
-open class Document {
-    var root: Section? = null
+open class Document : Section() {
+    open fun setText(text: String) {
+    }
 }
