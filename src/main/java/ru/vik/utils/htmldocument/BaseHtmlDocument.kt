@@ -216,17 +216,25 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
                 return null
             }
 
-            reColorFun.find(value)?.also {
-                it.groupValues[2].toIntOrNull()?.also { mr ->
-                    it.groupValues[3].toIntOrNull()?.also { mg ->
-                        it.groupValues[4].toIntOrNull()?.also { mb ->
+            reColorFun.find(value)?.also { res ->
+                res.groupValues[2].toIntOrNull()?.also { mr ->
+                   res.groupValues[3].toIntOrNull()?.also { mg ->
+                        res.groupValues[4].toIntOrNull()?.also { mb ->
                             val r = Math.min(Math.max(mr, 0), 255)
                             val g = Math.min(Math.max(mg, 0), 255)
                             val b = Math.min(Math.max(mb, 0), 255)
                             var a = 255
 
-                            it.groupValues[6].toFloatOrNull()?.also { ma ->
-                                a = Math.min(Math.max((ma * 255f).simpleRoundToInt(), 0), 255)
+                            if (res.groupValues[5].isEmpty()) {
+                                // Если не задан параметр a
+                                if (res.groupValues[1] == "rgba") return null
+                            } else {
+                                // Если задан параметр a
+                                if (res.groupValues[1] != "rgba") return null
+
+                                res.groupValues[6].toFloatOrNull()?.also { ma ->
+                                    a = Math.min(Math.max((ma * 255f).simpleRoundToInt(), 0), 255)
+                                }
                             }
 
                             return Color.argb(a, r, g, b)
