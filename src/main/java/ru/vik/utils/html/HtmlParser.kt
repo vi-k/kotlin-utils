@@ -234,7 +234,6 @@ open class HtmlParser(source: CharSequence,
             if (text.isNotEmpty()) {
                 if (tag.children.isNotEmpty()) tag = tag.children.last()
 
-//                if (isSpace(text.first()) && tag.text.isNotEmpty() && isSpace(tag.text.last())) {
                 // Убираем лишние пробелы между тегами
                 if (isSpace(text.first()) && tag.text.lastOrNull()?.let { isSpace(it) } == true) {
                     text = "${trimEnd(tag.text)} ${trimStart(text)}"
