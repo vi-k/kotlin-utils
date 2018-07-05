@@ -6,6 +6,9 @@ open class Border(
         val color: Int,
         val type: Type = Type.SOLID) : Size(size, units) {
 
+    constructor(size: Size, color: Int, type: Type = Type.SOLID)
+            : this(size.size, size.units, color, type)
+
     enum class Type { SOLID }
 
     // Клонирование не нужно, пока тип иммутабельный
