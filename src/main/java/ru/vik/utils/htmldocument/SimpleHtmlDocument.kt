@@ -6,103 +6,20 @@ import ru.vik.utils.document.*
 
 open class SimpleHtmlDocument : BaseHtmlDocument() {
 
-    private fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
-        tag.attributes["bgColor"]?.also {
-            getAttrColor(it)?.also { blockStyle.color = it }
-        }
-    }
-
-    private fun setPSFromAttributes(tag: Tag, paragraphStyle: ParagraphStyle) {
-        tag.attributes["align"]?.also {
-            when (it) {
-                "left"    -> paragraphStyle.align = ParagraphStyle.Align.LEFT
-                "right"   -> paragraphStyle.align = ParagraphStyle.Align.RIGHT
-                "center"  -> paragraphStyle.align = ParagraphStyle.Align.CENTER
-                "justify" -> paragraphStyle.align = ParagraphStyle.Align.JUSTIFY
-            }
-        }
-
-        tag.attributes["firstAlign"]?.also {
-            when (it) {
-                "left"    -> paragraphStyle.firstAlign = ParagraphStyle.Align.LEFT
-                "right"   -> paragraphStyle.firstAlign = ParagraphStyle.Align.RIGHT
-                "center"  -> paragraphStyle.firstAlign = ParagraphStyle.Align.CENTER
-                "justify" -> paragraphStyle.firstAlign = ParagraphStyle.Align.JUSTIFY
-            }
-        }
-
-        tag.attributes["lastAlign"]?.also {
-            when (it) {
-                "left"    -> paragraphStyle.lastAlign = ParagraphStyle.Align.LEFT
-                "right"   -> paragraphStyle.lastAlign = ParagraphStyle.Align.RIGHT
-                "center"  -> paragraphStyle.lastAlign = ParagraphStyle.Align.CENTER
-                "justify" -> paragraphStyle.lastAlign = ParagraphStyle.Align.JUSTIFY
-            }
-        }
-
-        tag.attributes["leftIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.leftIndent = it }
-        }
-
-        tag.attributes["rightIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.rightIndent = it }
-        }
-
-        tag.attributes["firstLeftIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.firstLeftIndent = it }
-        }
-
-        tag.attributes["firstRightIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.firstRightIndent = it }
-        }
-    }
-
-    private fun setCSFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
-        tag.attributes["lang"]?.also {
-            if (it == "csl") characterStyle.font = "ponomar"
-        }
-
-        tag.attributes["size"]?.also {
-            getAttrSize(it)?.also { characterStyle.size = it }
-        }
-    }
-
     init {
         addTag("br", TextConfig(type = Tag.Type.BR))
 
         // Sections
         addTag("div", TextConfig(
                 type = Tag.Type.SECTION,
-                onSetBlockStyle = { tag, blockStyle ->
-                    blockStyle.setMargin(Size.dp(4f))
-                    blockStyle.setBorder(
-                            Border.dp(7f, Color.rgb(0, 255, 0)),
-                            Border.dp(3f, Color.rgb(255, 0, 0)))
-//                    blockStyle.setBorder(
-//                            Border(7f, Color.argb(128, 0, 0, 255)),
-//                            Border(7f, Color.argb(0, 255, 255, 255)),
-//                            Border(3f, Color.argb(128, 255, 0, 0)),
-//                            Border(2f, Color.argb(128, 0, 0, 255)))
-                    blockStyle.setPadding(Size.dp(4f), Size.dp(4f))
-                    setBSFromAttributes(tag, blockStyle)
-                },
+                onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = ::setCSFromAttributes))
 
         // Paragraphs
         addTag("p", TextConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBlockStyle = { tag, blockStyle ->
-                    blockStyle.setMargin(Size.dp(2f))
-                    blockStyle.setBorder(Border.dp(1f, Color.rgb(160, 160, 160)))
-//                    blockStyle.setBorder(
-//                            Border(7f, Color.argb(255, 0, 0, 255)),
-//                            Border(7f, Color.argb(0, 255, 255, 255)),
-//                            Border(3f, Color.argb(192, 255, 0, 0)),
-//                            Border(2f, Color.argb(128, 0, 0, 255)))
-                    blockStyle.color = Color.rgb(192, 255, 192)
-                    setBSFromAttributes(tag, blockStyle)
-                },
+                onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = ::setCSFromAttributes))
 
@@ -144,9 +61,6 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     characterStyle.bold = true
                     setCSFromAttributes(tag, characterStyle)
                 }))
-
-//        addTag("div",
-//                TextConfig(units = Tag.Units.SECTION))
 
         addTag("i", TextConfig(
                 type = Tag.Type.CHARACTER,
@@ -207,5 +121,161 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 })
         )
+    }
+
+    private fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
+        tag.attributes["bgColor"]?.also {
+            getAttrColor(it)?.also { blockStyle.color = it }
+        }
+
+        tag.attributes["margin"]?.also {
+            getAttrSize(it)?.also { blockStyle.setMargin(it) }
+        }
+
+        tag.attributes["marginTop"]?.also {
+            getAttrSize(it)?.also { blockStyle.marginTop = it }
+        }
+
+        tag.attributes["marginRight"]?.also {
+            getAttrSize(it)?.also { blockStyle.marginTop = it }
+        }
+
+        tag.attributes["marginBottom"]?.also {
+            getAttrSize(it)?.also { blockStyle.marginTop = it }
+        }
+
+        tag.attributes["marginLeft"]?.also {
+            getAttrSize(it)?.also { blockStyle.marginTop = it }
+        }
+
+        tag.attributes["padding"]?.also {
+            getAttrSize(it)?.also { blockStyle.setPadding(it) }
+        }
+
+        tag.attributes["paddingTop"]?.also {
+            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+        }
+
+        tag.attributes["paddingRight"]?.also {
+            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+        }
+
+        tag.attributes["paddingBottom"]?.also {
+            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+        }
+
+        tag.attributes["paddingLeft"]?.also {
+            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+        }
+
+        tag.attributes["border"]?.also {
+            val list = splitAttr(it)
+            if (list.size >= 2) {
+                getAttrSize(list[0])?.also { size ->
+                    getAttrColor(list[1])?.also { color ->
+                        blockStyle.setBorder(Border(size, color))
+                    }
+                }
+            }
+        }
+
+        tag.attributes["borderTop"]?.also {
+            val list = splitAttr(it)
+            if (list.size >= 2) {
+                getAttrSize(list[0])?.also { size ->
+                    getAttrColor(list[1])?.also { color ->
+                        blockStyle.borderTop = Border(size, color)
+                    }
+                }
+            }
+        }
+
+        tag.attributes["borderRight"]?.also {
+            val list = splitAttr(it)
+            if (list.size >= 2) {
+                getAttrSize(list[0])?.also { size ->
+                    getAttrColor(list[1])?.also { color ->
+                        blockStyle.borderRight = Border(size, color)
+                    }
+                }
+            }
+        }
+
+        tag.attributes["borderBottom"]?.also {
+            val list = splitAttr(it)
+            if (list.size >= 2) {
+                getAttrSize(list[0])?.also { size ->
+                    getAttrColor(list[1])?.also { color ->
+                        blockStyle.borderBottom = Border(size, color)
+                    }
+                }
+            }
+        }
+
+        tag.attributes["borderLeft"]?.also {
+            val list = splitAttr(it)
+            if (list.size >= 2) {
+                getAttrSize(list[0])?.also { size ->
+                    getAttrColor(list[1])?.also { color ->
+                        blockStyle.borderLeft = Border(size, color)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setPSFromAttributes(tag: Tag, paragraphStyle: ParagraphStyle) {
+        tag.attributes["align"]?.also {
+            when (it) {
+                "left"    -> paragraphStyle.align = ParagraphStyle.Align.LEFT
+                "right"   -> paragraphStyle.align = ParagraphStyle.Align.RIGHT
+                "center"  -> paragraphStyle.align = ParagraphStyle.Align.CENTER
+                "justify" -> paragraphStyle.align = ParagraphStyle.Align.JUSTIFY
+            }
+        }
+
+        tag.attributes["firstAlign"]?.also {
+            when (it) {
+                "left"    -> paragraphStyle.firstAlign = ParagraphStyle.Align.LEFT
+                "right"   -> paragraphStyle.firstAlign = ParagraphStyle.Align.RIGHT
+                "center"  -> paragraphStyle.firstAlign = ParagraphStyle.Align.CENTER
+                "justify" -> paragraphStyle.firstAlign = ParagraphStyle.Align.JUSTIFY
+            }
+        }
+
+        tag.attributes["lastAlign"]?.also {
+            when (it) {
+                "left"    -> paragraphStyle.lastAlign = ParagraphStyle.Align.LEFT
+                "right"   -> paragraphStyle.lastAlign = ParagraphStyle.Align.RIGHT
+                "center"  -> paragraphStyle.lastAlign = ParagraphStyle.Align.CENTER
+                "justify" -> paragraphStyle.lastAlign = ParagraphStyle.Align.JUSTIFY
+            }
+        }
+
+        tag.attributes["leftIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.leftIndent = it }
+        }
+
+        tag.attributes["rightIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.rightIndent = it }
+        }
+
+        tag.attributes["firstLeftIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.firstLeftIndent = it }
+        }
+
+        tag.attributes["firstRightIndent"]?.also {
+            getAttrSize(it)?.also { paragraphStyle.firstRightIndent = it }
+        }
+    }
+
+    private fun setCSFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
+        tag.attributes["lang"]?.also {
+            if (it == "csl") characterStyle.font = "ponomar"
+        }
+
+        tag.attributes["size"]?.also {
+            getAttrSize(it)?.also { characterStyle.size = it }
+        }
     }
 }
