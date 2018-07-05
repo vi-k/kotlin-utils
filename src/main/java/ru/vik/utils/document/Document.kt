@@ -12,7 +12,7 @@ open class Document : Section() {
                 parser.next()
             }
 
-            this.addParagraph(Paragraph(text.substring(parser.start, parser.pos)))
+            this.addParagraph(Paragraph(parser.getParsedText()))
             parser.next()
         }
     }
