@@ -1,22 +1,22 @@
 package ru.vik.utils.document
 
-class ParagraphStyle(var align: Align? = null,
-                     var leftIndent: Size? = null,
-                     var rightIndent: Size? = null,
-                     var firstAlign: Align? = null,
-                     var firstLeftIndent: Size? = null,
-                     var firstRightIndent: Size? = null,
-                     var lastAlign: Align? = null,
-                     var dropCapCharacters: Int? = null,
-                     var dropCapLines: Int? = null,
-                     var dropCapStyle: CharacterStyle? = null,
-                     var tabStop: Int? = null,
-                     var baselineTop: Float? = null,
-                     var baselineGrid: Float? = null,
-                     var baselineBottom: Float? = null,
-                     var hyphens: Hyphens? = null
+class ParagraphStyle(
+        var align: Align? = null,
+        var leftIndent: Size? = null,
+        var rightIndent: Size? = null,
+        var firstAlign: Align? = null,
+        var firstLeftIndent: Size? = null,
+        var firstRightIndent: Size? = null,
+        var lastAlign: Align? = null,
+        var dropCapCharacters: Int? = null,
+        var dropCapLines: Int? = null,
+        var dropCapStyle: CharacterStyle? = null,
+        var tabStop: Int? = null,
+        var baselineTop: Float? = null,
+        var baselineGrid: Float? = null,
+        var baselineBottom: Float? = null,
+        var hyphens: Hyphens? = null) {
 
-) {
     enum class Align {
         LEFT, CENTER, RIGHT, JUSTIFY
     }

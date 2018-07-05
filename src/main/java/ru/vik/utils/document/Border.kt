@@ -1,9 +1,11 @@
 package ru.vik.utils.document
 
-open class Border(size: Float,
-                  units: Units,
-                  val color: Int,
-                  val type: Type = Type.SOLID) : Size(size, units) {
+open class Border(
+        size: Float,
+        units: Units,
+        val color: Int,
+        val type: Type = Type.SOLID) : Size(size, units) {
+
     enum class Type { SOLID }
 
     // Клонирование не нужно, пока тип иммутабельный

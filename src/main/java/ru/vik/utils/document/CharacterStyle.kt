@@ -1,17 +1,18 @@
 package ru.vik.utils.document
 
-class CharacterStyle(var font: String? = null,                // Название шрифта
-                     var size: Size = Size.em(1f),       // Размер шрифта
-                     var scaleX: Float = 1f,                  // Масштаб по-горизонтали
-                     var bold: Boolean? = null,               // Полужирный
-                     var italic: Boolean? = null,             // Курсив
-                     var underline: Boolean? = null,          // Подчёркивание
-                     var strike: Boolean? = null,             // Зачёркнутый текст
-                     var color: Int? = null,                  // Цвет букв
-                     var baselineShift: Size = Size.dp(0f), // Смещение базовой линии
-                     var letterSpacing: Float? = null,        // Расстояние между буквами
-                     var allCaps: Caps? = null                // Все заглавные
-) {
+class CharacterStyle(
+        var font: String? = null,
+        var size: Size = Size.em(1f),
+        var scaleX: Float = 1f,
+        var bold: Boolean? = null,
+        var italic: Boolean? = null,
+        var underline: Boolean? = null,
+        var strike: Boolean? = null,
+        var color: Int? = null,
+        var baselineShift: Size = Size.dp(0f),
+        var letterSpacing: Float? = null,
+        var allCaps: Caps? = null) {
+
     enum class Caps {
         NONE, ALL_CAPS, SMALL_CAPS
     }
@@ -22,9 +23,9 @@ class CharacterStyle(var font: String? = null,                // Названи�
         // Смещение базовой линии рассчитываем до того, как изменим шрифт
         val size = characterStyle.baselineShift.tryToDp(this.size)
         when {
-            size.isRelative()               -> this.baselineShift = characterStyle.baselineShift
+            size.isRelative() -> this.baselineShift = characterStyle.baselineShift
             this.baselineShift.isRelative() -> this.baselineShift = size
-            else                            -> {
+            else -> {
                 this.baselineShift = Size(this.baselineShift.size + size.size, Size.Units.DP)
             }
         }

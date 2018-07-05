@@ -9,6 +9,7 @@ package ru.vik.utils.document
  * в indent, margin, padding и border.
  */
 open class Size(val size: Float, val units: Units) {
+
     enum class Units {
         DP, EM, RATIO
     }

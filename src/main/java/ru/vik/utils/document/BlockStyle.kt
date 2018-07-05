@@ -1,19 +1,20 @@
 package ru.vik.utils.document
 
-open class BlockStyle(var marginTop: Size? = null,
-                      var marginRight: Size? = null,
-                      var marginBottom: Size? = null,
-                      var marginLeft: Size? = null,
-                      var borderTop: Border? = null,
-                      var borderRight: Border? = null,
-                      var borderBottom: Border? = null,
-                      var borderLeft: Border? = null,
-                      var paddingTop: Size? = null,
-                      var paddingRight: Size? = null,
-                      var paddingBottom: Size? = null,
-                      var paddingLeft: Size? = null,
-                      var color: Int = 0
-) {
+open class BlockStyle(
+        var marginTop: Size? = null,
+        var marginRight: Size? = null,
+        var marginBottom: Size? = null,
+        var marginLeft: Size? = null,
+        var borderTop: Border? = null,
+        var borderRight: Border? = null,
+        var borderBottom: Border? = null,
+        var borderLeft: Border? = null,
+        var paddingTop: Size? = null,
+        var paddingRight: Size? = null,
+        var paddingBottom: Size? = null,
+        var paddingLeft: Size? = null,
+        var color: Int = 0) {
+
     fun clone() = BlockStyle(
             marginTop = this.marginTop,
             marginRight = this.marginRight,
