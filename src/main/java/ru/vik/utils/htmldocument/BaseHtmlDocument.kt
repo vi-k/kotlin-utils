@@ -6,6 +6,7 @@ import ru.vik.utils.document.*
 import ru.vik.utils.html.BaseHtml
 import ru.vik.utils.html.Tag
 import ru.vik.utils.math.simpleRoundToInt
+import ru.vik.utils.parser.StringParser
 
 typealias SetBlockStyleHandler = (Tag, BlockStyle) -> Unit
 typealias SetParagraphStyleHandler = (Tag, ParagraphStyle) -> Unit
@@ -265,6 +266,31 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
             }
 
             return null
+        }
+
+        fun splitAttr(value: String): MutableList<String> {
+            val list = mutableListOf<String>()
+            val parser = StringParser(value)
+
+            while (!parser.eof()) {
+                // Пропускаем пробелы
+                while (!parser.eof() && parser.get() == ' ') {
+                    parser.next()
+                }
+
+                // Сохраняем строку без пробелов
+                parser.start()
+
+                while (!parser.eof() && parser.get() != ' ') {
+                    parser.next()
+                }
+
+                if (parser.parsed()) list.add(parser.getParsedText())
+
+                parser.next()
+            }
+
+            return list
         }
     }
 }
