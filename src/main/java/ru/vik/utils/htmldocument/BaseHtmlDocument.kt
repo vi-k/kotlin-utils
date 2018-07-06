@@ -153,7 +153,9 @@ open class BaseHtmlDocument(
         }
     }
 
-    // Добавление нового абзаца
+    /*
+     * Добавление нового абзаца
+     */
     private fun appendParagraph(state: State, text: String? = null): Paragraph {
         val paragraph = Paragraph(text)
 
@@ -172,7 +174,9 @@ open class BaseHtmlDocument(
         return paragraph
     }
 
-    // Закрытие текущего абзаца
+    /*
+     * Закрытие текущего абзаца.
+     */
     private fun closeParagraph(state: State) {
         // Закрываем все открытые спаны
         state.paragraph?.also {
@@ -185,114 +189,134 @@ open class BaseHtmlDocument(
 
         state.paragraph = null
     }
+}
 
-    companion object {
-        private val reColorNum: Regex by lazy {
-            Regex("""^#([0-9a-f]{3,6})$""", RegexOption.IGNORE_CASE)
-        }
+/*
+ * Вспомогательные функции
+ */
+private val reColorNum: Regex by lazy {
+    Regex("""^#([0-9a-f]{3,6})$""", RegexOption.IGNORE_CASE)
+}
 
-        private val reColorFun: Regex by lazy {
-            Regex("""^(rgba?)\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*(\d+(\.\d*)?)\s*)?\)$""",
-                    RegexOption.IGNORE_CASE)
-        }
+private val reColorFun: Regex by lazy {
+    Regex("""^(rgba?)\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*(\d+(\.\d*)?)\s*)?\)$""",
+            RegexOption.IGNORE_CASE)
+}
 
-        private val reSize: Regex by lazy {
-            Regex("""^(-?\d+(\.\d*)?)(|px|em|%)$""", RegexOption.IGNORE_CASE)
-        }
+private val reSize: Regex by lazy {
+    Regex("""^(-?\d+(\.\d*)?)(|px|em|%)$""", RegexOption.IGNORE_CASE)
+}
 
-        /**
-         * Преобразование аттрибута в цвет.
-         */
-        fun getAttrColor(value: String): Int? {
-            reColorNum.find(value)?.also {
-                val num = it.groupValues[1]
-                if (num.length == 6) {
-                    num.toIntOrNull(16)?.also { return it.setA(255) }
-                } else if (num.length == 3) {
-                    num.toIntOrNull(16)?.also {
-                        val r = it and 0x000f00
-                        val g = it and 0x0000f0
-                        val b = it and 0x00000f
-                        return (0xff shl 24) or
-                                (r shl 12) or (r shl 8) or
-                                (g shl 8) or (g shl 4) or
-                                (b shl 4) or b
-                    }
-                }
-
-                return null
+/**
+ * Преобразование строки в форматах, принятых в HTML и CSS, в цвет:
+ * 1) #RrGgBb - цвет задан в шестнадцатиричном виде (Rr, Gg, Bb in 00..ff)
+ * 2) #rgb - цвет задан в сокращённом шестнадцатиричном виде, раскрывается
+ *    в #rrggbb (r, g, b = 0..f)
+ * 3) rgb(r, g, b) - цвет задан тремя числами (r, g, b = 0..255)
+ * 4) rgba(r, g, b, a) - цвет задан тремя числами (r, g, b = 0..255) и
+ *    альфа-каналом (a = 0..1)
+ * @return Числовое значение указанного цвета либо null, если преобразование не удалось.
+ */
+fun String.toHtmlColor(): Int? {
+    reColorNum.find(this)?.also {
+        val num = it.groupValues[1]
+        if (num.length == 6) {
+            num.toIntOrNull(16)?.also { return it.setA(255) }
+        } else if (num.length == 3) {
+            num.toIntOrNull(16)?.also {
+                val r = it and 0x000f00
+                val g = it and 0x0000f0
+                val b = it and 0x00000f
+                return (0xff shl 24) or
+                        (r shl 12) or (r shl 8) or
+                        (g shl 8) or (g shl 4) or
+                        (b shl 4) or b
             }
+        }
 
-            reColorFun.find(value)?.also { res ->
-                res.groupValues[2].toIntOrNull()?.also { mr ->
-                    res.groupValues[3].toIntOrNull()?.also { mg ->
-                        res.groupValues[4].toIntOrNull()?.also { mb ->
-                            val r = Math.min(Math.max(mr, 0), 255)
-                            val g = Math.min(Math.max(mg, 0), 255)
-                            val b = Math.min(Math.max(mb, 0), 255)
-                            var a = 255
+        return null
+    }
 
-                            if (res.groupValues[5].isEmpty()) {
-                                // Если не задан параметр a
-                                if (res.groupValues[1] == "rgba") return null
-                            } else {
-                                // Если задан параметр a
-                                if (res.groupValues[1] != "rgba") return null
+    reColorFun.find(this)?.also { res ->
+        res.groupValues[2].toIntOrNull()?.also { mr ->
+            res.groupValues[3].toIntOrNull()?.also { mg ->
+                res.groupValues[4].toIntOrNull()?.also { mb ->
+                    val r = Math.min(Math.max(mr, 0), 255)
+                    val g = Math.min(Math.max(mg, 0), 255)
+                    val b = Math.min(Math.max(mb, 0), 255)
+                    var a = 255
 
-                                res.groupValues[6].toFloatOrNull()?.also { ma ->
-                                    a = Math.min(Math.max((ma * 255f).simpleRoundToInt(), 0), 255)
-                                }
-                            }
+                    if (res.groupValues[5].isEmpty()) {
+                        // Если не задан параметр a
+                        if (res.groupValues[1] == "rgba") return null
+                    } else {
+                        // Если задан параметр a
+                        if (res.groupValues[1] != "rgba") return null
 
-                            return Color.argb(a, r, g, b)
+                        res.groupValues[6].toFloatOrNull()?.also { ma ->
+                            a = Math.min(Math.max((ma * 255f).simpleRoundToInt(), 0), 255)
                         }
                     }
+
+                    return Color.argb(a, r, g, b)
                 }
             }
-
-            return null
-        }
-
-        /**
-         * Преобразование аттрибута в размер с учётом единиц измерения: px, em и %.
-         */
-        fun getAttrSize(value: String, forbidPercent: Boolean = false): Size? {
-            reSize.find(value)?.also {
-                it.groupValues[1].toFloatOrNull()?.also { num ->
-                    return when (it.groupValues[3].toLowerCase()) {
-                        "%" -> if (forbidPercent) null else Size.percent(num)
-                        "em" -> Size.em(num)
-                        else -> Size.dp(num)
-                    }
-                }
-            }
-
-            return null
-        }
-
-        fun splitAttr(value: String): MutableList<String> {
-            val list = mutableListOf<String>()
-            val parser = StringParser(value)
-
-            while (!parser.eof()) {
-                // Пропускаем пробелы
-                while (!parser.eof() && parser.get() == ' ') {
-                    parser.next()
-                }
-
-                // Сохраняем строку без пробелов
-                parser.start()
-
-                while (!parser.eof() && parser.get() != ' ') {
-                    parser.next()
-                }
-
-                if (parser.parsed()) list.add(parser.getParsedText())
-
-                parser.next()
-            }
-
-            return list
         }
     }
+
+    return null
+}
+
+/**
+ * Преобразование строки в форматах, принятых в HTML и CSS, в размер. Из единиц измерений
+ * возможно использовать только px, em и %. Если единицы не указаны, подразумеваются px.
+ *
+ * @param allowPercent В некоторых случаях необходимо запретить установку размера
+ * через проценты.
+ * @return Объект типа Size либо null, если преобразование не удалось. Класс Size
+ * не поддерживает напрямую проценты, они переводятся в доли (ratio).
+ */
+fun String.toHtmlSize(allowPercent: Boolean = true): Size? {
+    reSize.find(this)?.also {
+        it.groupValues[1].toFloatOrNull()?.also { num ->
+            return when (it.groupValues[3].toLowerCase()) {
+                "%" -> if (allowPercent) Size.percent(num) else null
+                "em" -> Size.em(num)
+                else -> Size.dp(num)
+            }
+        }
+    }
+
+    return null
+}
+
+/**
+ * Преобразование строки параметров, разделённых пробелами, в список. Между параметрами может
+ * быть любое кол-во пробелов.
+ *
+ * @return Список значений (MutableList<String>).
+ */
+fun String.splitBySpace(): List<String> {
+    val list = mutableListOf<String>()
+    val parser = StringParser(this)
+
+    while (!parser.eof()) {
+        // Пропускаем пробелы
+        while (!parser.eof() && parser.get() == ' ') {
+            parser.next()
+        }
+
+        // Сохраняем строку без пробелов
+        parser.start()
+
+        while (!parser.eof() && parser.get() != ' ') {
+            parser.next()
+        }
+
+        if (parser.parsed()) list.add(parser.getParsedText())
+
+        parser.next()
+    }
+
+    return list
 }

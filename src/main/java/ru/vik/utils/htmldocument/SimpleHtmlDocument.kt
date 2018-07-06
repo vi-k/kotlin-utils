@@ -133,54 +133,54 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
 
     fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
         tag.attributes["bgColor"]?.also {
-            getAttrColor(it)?.also { blockStyle.color = it }
+            it.toHtmlColor()?.also { blockStyle.color = it }
         }
 
         tag.attributes["margin"]?.also {
-            getAttrSize(it)?.also { blockStyle.setMargin(it) }
+            it.toHtmlSize()?.also { blockStyle.setMargin(it) }
         }
 
         tag.attributes["marginTop"]?.also {
-            getAttrSize(it)?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { blockStyle.marginTop = it }
         }
 
         tag.attributes["marginRight"]?.also {
-            getAttrSize(it)?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { blockStyle.marginTop = it }
         }
 
         tag.attributes["marginBottom"]?.also {
-            getAttrSize(it)?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { blockStyle.marginTop = it }
         }
 
         tag.attributes["marginLeft"]?.also {
-            getAttrSize(it)?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { blockStyle.marginTop = it }
         }
 
         tag.attributes["padding"]?.also {
-            getAttrSize(it)?.also { blockStyle.setPadding(it) }
+            it.toHtmlSize()?.also { blockStyle.setPadding(it) }
         }
 
         tag.attributes["paddingTop"]?.also {
-            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
         }
 
         tag.attributes["paddingRight"]?.also {
-            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
         }
 
         tag.attributes["paddingBottom"]?.also {
-            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
         }
 
         tag.attributes["paddingLeft"]?.also {
-            getAttrSize(it)?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
         }
 
         tag.attributes["border"]?.also {
-            val list = splitAttr(it)
+            val list = it.splitBySpace()
             if (list.size >= 2) {
-                getAttrSize(list[0])?.also { size ->
-                    getAttrColor(list[1])?.also { color ->
+                list[0].toHtmlSize(false)?.also { size ->
+                    list[1].toHtmlColor()?.also { color ->
                         blockStyle.setBorder(Border(size, color))
                     }
                 }
@@ -188,10 +188,10 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
 
         tag.attributes["borderTop"]?.also {
-            val list = splitAttr(it)
+            val list = it.splitBySpace()
             if (list.size >= 2) {
-                getAttrSize(list[0])?.also { size ->
-                    getAttrColor(list[1])?.also { color ->
+                list[0].toHtmlSize(false)?.also { size ->
+                    list[1].toHtmlColor()?.also { color ->
                         blockStyle.borderTop = Border(size, color)
                     }
                 }
@@ -199,10 +199,10 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
 
         tag.attributes["borderRight"]?.also {
-            val list = splitAttr(it)
+            val list = it.splitBySpace()
             if (list.size >= 2) {
-                getAttrSize(list[0])?.also { size ->
-                    getAttrColor(list[1])?.also { color ->
+                list[0].toHtmlSize(false)?.also { size ->
+                    list[1].toHtmlColor()?.also { color ->
                         blockStyle.borderRight = Border(size, color)
                     }
                 }
@@ -210,10 +210,10 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
 
         tag.attributes["borderBottom"]?.also {
-            val list = splitAttr(it)
+            val list = it.splitBySpace()
             if (list.size >= 2) {
-                getAttrSize(list[0])?.also { size ->
-                    getAttrColor(list[1])?.also { color ->
+                list[0].toHtmlSize(false)?.also { size ->
+                    list[1].toHtmlColor()?.also { color ->
                         blockStyle.borderBottom = Border(size, color)
                     }
                 }
@@ -221,10 +221,10 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
 
         tag.attributes["borderLeft"]?.also {
-            val list = splitAttr(it)
+            val list = it.splitBySpace()
             if (list.size >= 2) {
-                getAttrSize(list[0])?.also { size ->
-                    getAttrColor(list[1])?.also { color ->
+                list[0].toHtmlSize(false)?.also { size ->
+                    list[1].toHtmlColor()?.also { color ->
                         blockStyle.borderLeft = Border(size, color)
                     }
                 }
@@ -261,19 +261,19 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
 
         tag.attributes["leftIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.leftIndent = it }
+            it.toHtmlSize()?.also { paragraphStyle.leftIndent = it }
         }
 
         tag.attributes["rightIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.rightIndent = it }
+            it.toHtmlSize()?.also { paragraphStyle.rightIndent = it }
         }
 
         tag.attributes["firstLeftIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.firstLeftIndent = it }
+            it.toHtmlSize()?.also { paragraphStyle.firstLeftIndent = it }
         }
 
         tag.attributes["firstRightIndent"]?.also {
-            getAttrSize(it)?.also { paragraphStyle.firstRightIndent = it }
+            it.toHtmlSize()?.also { paragraphStyle.firstRightIndent = it }
         }
     }
 
@@ -283,7 +283,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
 
         tag.attributes["size"]?.also {
-            getAttrSize(it)?.also { characterStyle.size = it }
+            it.toHtmlSize()?.also { characterStyle.size = it }
         }
     }
 }

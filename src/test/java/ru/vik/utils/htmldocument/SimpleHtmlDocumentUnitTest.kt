@@ -1,4 +1,4 @@
-package ru.vik.utils
+package ru.vik.utils.htmldocument
 
 import org.junit.Test
 
@@ -7,8 +7,6 @@ import org.junit.Assert.*
 import ru.vik.utils.document.Paragraph
 import ru.vik.utils.document.Section
 import ru.vik.utils.html.Tag
-import ru.vik.utils.htmldocument.BaseHtmlDocument
-import ru.vik.utils.htmldocument.SimpleHtmlDocument
 
 class SimpleHtmlDocumentUnitTest {
     @Test
