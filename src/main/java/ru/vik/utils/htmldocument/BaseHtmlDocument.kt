@@ -12,18 +12,22 @@ typealias SetBlockStyleHandler = (Tag, BlockStyle) -> Unit
 typealias SetParagraphStyleHandler = (Tag, ParagraphStyle) -> Unit
 typealias SetCharacterStyleHandler = (Tag, CharacterStyle) -> Unit
 
-open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
-    : Document() {
+open class BaseHtmlDocument(
+    private val html: BaseHtml = BaseHtml()
+) : Document() {
 
-    class TextConfig(type: Tag.Type,
-            val onSetBlockStyle: SetBlockStyleHandler? = null,
-            val onSetParagraphStyle: SetParagraphStyleHandler? = null,
-            val onSetCharacterStyle: SetCharacterStyleHandler? = null
-    ) : BaseHtml.TagConfig(type)
+    class TagConfig(
+        type: Tag.Type,
+        var onSetBlockStyle: SetBlockStyleHandler? = null,
+        var onSetParagraphStyle: SetParagraphStyleHandler? = null,
+        var onSetCharacterStyle: SetCharacterStyleHandler? = null
+    ) : BaseHtml.BaseTagConfig(type)
 
-    private class State(var section: Section,
-            var paragraph: Paragraph? = null,
-            val openedSpans: MutableList<Paragraph.Span> = mutableListOf())
+    private class State(
+        var section: Section,
+        var paragraph: Paragraph? = null,
+        val openedSpans: MutableList<Paragraph.Span> = mutableListOf()
+    )
 
     override fun setText(text: String) {
         this.html.parse(text)
@@ -34,18 +38,16 @@ open class BaseHtmlDocument(private val html: BaseHtml = BaseHtml())
         tagToText(this.html.root!!, state, true)
     }
 
-    fun getTextConfig(name: String): TextConfig? {
-        return this.html.getTagConfig(name)?.let {
-            it as? TextConfig
-        }
+    fun getTagConfig(name: String): TagConfig? {
+        return this.html.getBaseTagConfig(name) as? TagConfig
     }
 
-    fun addTag(name: String, config: TextConfig) {
+    fun addTag(name: String, config: TagConfig) {
         this.html.config[name] = config
     }
 
     private fun tagToText(tag: Tag, state: State, isRoot: Boolean = false) {
-        val config = this.getTextConfig(tag.name)
+        val config = this.getTagConfig(tag.name)
 
         // Создаём элемент и заполняем его свойства
         when (tag.type) {

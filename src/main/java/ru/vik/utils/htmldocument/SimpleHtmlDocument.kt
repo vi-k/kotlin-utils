@@ -1,29 +1,28 @@
 package ru.vik.utils.htmldocument
 
 import ru.vik.utils.html.Tag
-import ru.vik.utils.color.Color
 import ru.vik.utils.document.*
 
 open class SimpleHtmlDocument : BaseHtmlDocument() {
 
     init {
-        addTag("br", TextConfig(type = Tag.Type.BR))
+        addTag("br", TagConfig(type = Tag.Type.BR))
 
         // Sections
-        addTag("div", TextConfig(
+        addTag("div", TagConfig(
                 type = Tag.Type.SECTION,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = ::setCSFromAttributes))
 
         // Paragraphs
-        addTag("p", TextConfig(
+        addTag("p", TagConfig(
                 type = Tag.Type.PARAGRAPH,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
                 onSetCharacterStyle = ::setCSFromAttributes))
 
-        addTag("h1", TextConfig(
+        addTag("h1", TagConfig(
                 type = Tag.Type.PARAGRAPH,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
@@ -33,7 +32,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("h2", TextConfig(
+        addTag("h2", TagConfig(
                 type = Tag.Type.PARAGRAPH,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
@@ -43,7 +42,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("h3", TextConfig(
+        addTag("h3", TagConfig(
                 type = Tag.Type.PARAGRAPH,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetParagraphStyle = ::setPSFromAttributes,
@@ -53,8 +52,17 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
+        addTag("blockquote", TagConfig(
+                type = Tag.Type.PARAGRAPH,
+                onSetBlockStyle = { tag, blockStyle ->
+                    blockStyle.marginLeft = Size.em(2f)
+                    setBSFromAttributes(tag, blockStyle)
+                },
+                onSetParagraphStyle = ::setPSFromAttributes,
+                onSetCharacterStyle = ::setCSFromAttributes))
+
         // Spans
-        addTag("b", TextConfig(
+        addTag("b", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -62,7 +70,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("i", TextConfig(
+        addTag("i", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -70,7 +78,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("s", TextConfig(
+        addTag("s", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -78,16 +86,16 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("strike", getTextConfig("s")!!)
+        addTag("strike", getTagConfig("s")!!)
 
-        addTag("span", TextConfig(
+        addTag("span", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = ::setCSFromAttributes))
 
-        addTag("font", getTextConfig("span")!!)
+        addTag("font", getTagConfig("span")!!)
 
-        addTag("sub", TextConfig(
+        addTag("sub", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -96,7 +104,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("sup", TextConfig(
+        addTag("sup", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -105,7 +113,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("small", TextConfig(
+        addTag("small", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -113,7 +121,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                     setCSFromAttributes(tag, characterStyle)
                 }))
 
-        addTag("u", TextConfig(
+        addTag("u", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBlockStyle = ::setBSFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
@@ -123,7 +131,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         )
     }
 
-    private fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
+    fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
         tag.attributes["bgColor"]?.also {
             getAttrColor(it)?.also { blockStyle.color = it }
         }
@@ -224,30 +232,30 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
     }
 
-    private fun setPSFromAttributes(tag: Tag, paragraphStyle: ParagraphStyle) {
+    fun setPSFromAttributes(tag: Tag, paragraphStyle: ParagraphStyle) {
         tag.attributes["align"]?.also {
             when (it) {
-                "left"    -> paragraphStyle.align = ParagraphStyle.Align.LEFT
-                "right"   -> paragraphStyle.align = ParagraphStyle.Align.RIGHT
-                "center"  -> paragraphStyle.align = ParagraphStyle.Align.CENTER
+                "left" -> paragraphStyle.align = ParagraphStyle.Align.LEFT
+                "right" -> paragraphStyle.align = ParagraphStyle.Align.RIGHT
+                "center" -> paragraphStyle.align = ParagraphStyle.Align.CENTER
                 "justify" -> paragraphStyle.align = ParagraphStyle.Align.JUSTIFY
             }
         }
 
         tag.attributes["firstAlign"]?.also {
             when (it) {
-                "left"    -> paragraphStyle.firstAlign = ParagraphStyle.Align.LEFT
-                "right"   -> paragraphStyle.firstAlign = ParagraphStyle.Align.RIGHT
-                "center"  -> paragraphStyle.firstAlign = ParagraphStyle.Align.CENTER
+                "left" -> paragraphStyle.firstAlign = ParagraphStyle.Align.LEFT
+                "right" -> paragraphStyle.firstAlign = ParagraphStyle.Align.RIGHT
+                "center" -> paragraphStyle.firstAlign = ParagraphStyle.Align.CENTER
                 "justify" -> paragraphStyle.firstAlign = ParagraphStyle.Align.JUSTIFY
             }
         }
 
         tag.attributes["lastAlign"]?.also {
             when (it) {
-                "left"    -> paragraphStyle.lastAlign = ParagraphStyle.Align.LEFT
-                "right"   -> paragraphStyle.lastAlign = ParagraphStyle.Align.RIGHT
-                "center"  -> paragraphStyle.lastAlign = ParagraphStyle.Align.CENTER
+                "left" -> paragraphStyle.lastAlign = ParagraphStyle.Align.LEFT
+                "right" -> paragraphStyle.lastAlign = ParagraphStyle.Align.RIGHT
+                "center" -> paragraphStyle.lastAlign = ParagraphStyle.Align.CENTER
                 "justify" -> paragraphStyle.lastAlign = ParagraphStyle.Align.JUSTIFY
             }
         }
@@ -269,7 +277,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
     }
 
-    private fun setCSFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
+    fun setCSFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
         tag.attributes["lang"]?.also {
             if (it == "csl") characterStyle.font = "ponomar"
         }
