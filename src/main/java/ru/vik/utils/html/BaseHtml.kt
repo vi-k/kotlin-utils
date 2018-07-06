@@ -4,8 +4,10 @@ open class BaseHtml {
     var root: Tag? = null
     val config = hashMapOf<String, TagConfig>()
 
-    class InnerHtmlParser(val parent: BaseHtml, source: CharSequence)
-        : HtmlParser(source = source) {
+    class InnerHtmlParser(
+        val parent: BaseHtml,
+        source: CharSequence
+    ) : HtmlParser(source = source) {
 
         override fun setTagProperties(tag: Tag) {
             this.parent.setTagProperties(tag)

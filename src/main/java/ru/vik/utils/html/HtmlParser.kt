@@ -2,9 +2,11 @@ package ru.vik.utils.html
 
 import ru.vik.utils.parser.StringParserEx
 
-open class HtmlParser(source: CharSequence,
-                      start: Int = 0,
-                      end: Int = source.length) : StringParserEx(source, start, end) {
+open class HtmlParser(
+    source: CharSequence,
+    start: Int = 0,
+    end: Int = source.length
+) : StringParserEx(source, start, end) {
 
     private var tag: Tag? = null
     private var lastTagWithEndSpace: Tag? = null
@@ -86,7 +88,7 @@ open class HtmlParser(source: CharSequence,
                             value = when {
                                 parseQuotedValue() -> getValue(this.start + 1, this.pos - 1)
                                 parseSimpleValue() -> getValue(this.start, this.pos)
-                                else               -> ""
+                                else -> ""
                             }
 
                         }
@@ -209,7 +211,7 @@ open class HtmlParser(source: CharSequence,
 
         if (text.isNotEmpty()) {
             if ((this.needForTrimStart || this.lastTagWithEndSpace != null)
-                && isSpace(text.first())) {
+                    && isSpace(text.first())) {
 
                 text = trimStart(text)
             }
@@ -327,12 +329,12 @@ open class HtmlParser(source: CharSequence,
         if (name != null) {
             when (name) {
                 "nbsp" -> char = '\u00A0'
-                "amp"  -> char = '&'
-                "lt"   -> char = '<'
-                "gt"   -> char = '>'
+                "amp" -> char = '&'
+                "lt" -> char = '<'
+                "gt" -> char = '>'
                 "quot" -> char = '"'
                 "apos" -> char = '\''
-                else   -> pos = parseStart
+                else -> pos = parseStart
             }
         }
 
@@ -538,7 +540,7 @@ open class HtmlParser(source: CharSequence,
 
         fun isTagNamePart(char: Char): Boolean {
             return char in 'A'..'Z' || char in 'a'..'z' ||
-                   char == '-' || char == '_' || char in '0'..'9'
+                    char == '-' || char == '_' || char in '0'..'9'
         }
 
         fun isAttrNameFirst(char: Char): Boolean {
