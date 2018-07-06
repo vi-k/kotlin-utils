@@ -22,17 +22,17 @@ fun Int.setB(value: Int) = (this and 0xff.inv()) or value
  * Все компоненты цвета через мультидекларацию:
  * val (a, r, g, b) = сolor.argb
  */
-data class ARGB(val a: Int, val r: Int, val g: Int, val b: Int)
+data class Argb(val a: Int, val r: Int, val g: Int, val b: Int)
 
-val Int.argb get() = ARGB(this.a, this.r, this.g, this.b)
+val Int.argb get() = Argb(this.a, this.r, this.g, this.b)
 
 /**
  * Компоненты r, g и b цвета через мультидекларацию:
  * val (r, g, b) = сolor.rgb
  */
-data class RGB(val r: Int, val g: Int, val b: Int)
+data class Rgb(val r: Int, val g: Int, val b: Int)
 
-val Int.rgb get() = RGB(this.r, this.g, this.b)
+val Int.rgb get() = Rgb(this.r, this.g, this.b)
 
 /**
  * Наложение цвета с учётом альфа-каналов цветов. При наложении результат, как и в природе,
@@ -181,8 +181,16 @@ class Color {
             return (a shl 24) or (r shl 16) or (g shl 8) or b
         }
 
+        fun argb(a: Int, rgb: Int): Int {
+            return (a shl 24) or rgb
+        }
+
         fun rgb(r: Int, g: Int, b: Int): Int {
             return argb(255, r, g, b)
+        }
+
+        fun rgb(rgb: Int): Int {
+            return argb(255, rgb)
         }
 
         fun toString(color: Int): String {
