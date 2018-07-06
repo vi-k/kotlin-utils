@@ -3,25 +3,25 @@ package ru.vik.utils.html
 open class SimpleHtml : BaseHtml() {
 
     init {
-        addTag("br", TagConfig(type = Tag.Type.BR))
+        addTag("br", BaseTagConfig(type = Tag.Type.BR))
 
-        addTag("div", TagConfig(type = Tag.Type.SECTION))
+        addTag("div", BaseTagConfig(type = Tag.Type.SECTION))
 
-        addTag("p", TagConfig(type = Tag.Type.PARAGRAPH))
-        addTag("h1", TagConfig(type = Tag.Type.PARAGRAPH))
-        addTag("h2", TagConfig(type = Tag.Type.PARAGRAPH))
-        addTag("h3", TagConfig(type = Tag.Type.PARAGRAPH))
-        addTag("blockquote", TagConfig(type = Tag.Type.PARAGRAPH))
+        addTag("p", BaseTagConfig(type = Tag.Type.PARAGRAPH))
+        addTag("h1", BaseTagConfig(type = Tag.Type.PARAGRAPH))
+        addTag("h2", BaseTagConfig(type = Tag.Type.PARAGRAPH))
+        addTag("h3", BaseTagConfig(type = Tag.Type.PARAGRAPH))
+        addTag("blockquote", BaseTagConfig(type = Tag.Type.PARAGRAPH))
 
-        addTag("b", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("i", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("s", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("strike", getTagConfig("s")!!)
-        addTag("span", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("font", getTagConfig("span")!!)
-        addTag("sub", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("sup", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("small", TagConfig(type = Tag.Type.CHARACTER))
-        addTag("u", TagConfig(type = Tag.Type.CHARACTER))
+        addTag("b", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("i", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("s", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("strike", getBaseTagConfig("s")!!)
+        addTag("span", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("font", getBaseTagConfig("span")!!)
+        addTag("sub", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("sup", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("small", BaseTagConfig(type = Tag.Type.CHARACTER))
+        addTag("u", BaseTagConfig(type = Tag.Type.CHARACTER))
     }
 }

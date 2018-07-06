@@ -2,7 +2,7 @@ package ru.vik.utils.html
 
 open class BaseHtml {
     var root: Tag? = null
-    val config = hashMapOf<String, TagConfig>()
+    val config = hashMapOf<String, BaseTagConfig>()
 
     class InnerHtmlParser(
         val parent: BaseHtml,
@@ -14,7 +14,7 @@ open class BaseHtml {
         }
     }
 
-    open class TagConfig(val type: Tag.Type)
+    open class BaseTagConfig(val type: Tag.Type)
 
     open fun setTagProperties(tag: Tag) {
         if (!tag.type.isCorrect()) {
@@ -27,11 +27,11 @@ open class BaseHtml {
         return this
     }
 
-    fun getTagConfig(name: String): TagConfig? {
+    fun getBaseTagConfig(name: String): BaseTagConfig? {
         return config[name]
     }
 
-    fun addTag(name: String, config: TagConfig) {
+    fun addTag(name: String, config: BaseTagConfig) {
         this.config[name] = config
     }
 
