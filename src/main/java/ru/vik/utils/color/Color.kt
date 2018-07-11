@@ -174,6 +174,19 @@ fun Int.mix2(weight1: Double, color2: Int, weight2: Double): Int {
 
 class Color {
     companion object {
+        const val BLACK = 0x000000 or (0xff shl 24)
+        const val DKGRAY = 0x444444 or (0xff shl 24)
+        const val GRAY = 0x888888 or (0xff shl 24)
+        const val LTGRAY = 0xcccccc or (0xff shl 24)
+        const val WHITE = 0xffffff or (0xff shl 24)
+        const val RED = 0xff0000 or (0xff shl 24)
+        const val GREEN = 0x00ff00 or (0xff shl 24)
+        const val BLUE = 0x0000ff or (0xff shl 24)
+        const val YELLOW = 0xffff00 or (0xff shl 24)
+        const val CYAN = 0x00ffff or (0xff shl 24)
+        const val MAGENTA = 0xff00ff or (0xff shl 24)
+        const val TRANSPARENT = 0
+
         /**
          * Функции создания цвета по компонентам.
          */
