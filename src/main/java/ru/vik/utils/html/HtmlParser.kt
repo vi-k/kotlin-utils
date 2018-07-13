@@ -389,22 +389,6 @@ open class HtmlParser(
         return parsed()
     }
 
-    private fun parseSpace(): Boolean {
-        start()
-
-        if (!eof() && isSpace(get())) next()
-
-        return parsed()
-    }
-
-    private fun parseNoSpace(): Boolean {
-        start()
-
-        if (!eof() && !isSpace(get())) next()
-
-        return parsed()
-    }
-
     // Парсинг символа в строке, заключённой в кавычки
     private fun parseStringChar(quoteChar: Char): Boolean {
         start()
@@ -472,15 +456,6 @@ open class HtmlParser(
                 back()
                 break
             }
-        }
-
-        return parsed(parseStart)
-    }
-
-    private fun parseSpaces(): Boolean {
-        val parseStart = start()
-
-        while (parseSpace()) {
         }
 
         return parsed(parseStart)
