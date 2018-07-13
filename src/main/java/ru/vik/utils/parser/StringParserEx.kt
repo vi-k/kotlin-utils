@@ -20,7 +20,8 @@ open class StringParserEx(source: CharSequence,
 
     fun trimEnd(string: CharSequence): String {
         var end = string.length
-        while (end > 0 && isSpace(string[--end])) {
+        while (end > 0 && isSpace(string[end - 1])) {
+            end--
         }
         return string.substring(0, end)
     }
@@ -33,7 +34,8 @@ open class StringParserEx(source: CharSequence,
         }
 
         var end = string.length
-        while (end > start && isSpace(string[--end])) {
+        while (end > start && isSpace(string[end - 1])) {
+            end--
         }
         return string.substring(start, end)
     }
