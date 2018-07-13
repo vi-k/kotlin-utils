@@ -278,6 +278,10 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
     }
 
     fun setCSFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
+        tag.attributes["font"]?.also {
+            characterStyle.font = it
+        }
+
         tag.attributes["lang"]?.also {
             if (it == "csl") characterStyle.font = "ponomar"
         }
