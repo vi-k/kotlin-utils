@@ -1,17 +1,19 @@
 package ru.vik.utils.parser
 
-open class Parser(var start: Int,
-                  val end: Int) {
+open class Parser(
+    var start: Int,
+    val end: Int
+) {
     var pos = start
 
-    fun reset(pos: Int = 0) {
-        this.start = pos
-        this.pos = pos
+    fun reset(start: Int = 0) {
+        this.start = start
+        this.pos = start
     }
 
     fun start(): Int {
         this.start = this.pos
-        return this.pos
+        return this.start
     }
 
     fun eof() = this.pos >= this.end

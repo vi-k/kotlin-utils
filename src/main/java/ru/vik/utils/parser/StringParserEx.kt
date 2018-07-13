@@ -1,96 +1,66 @@
 package ru.vik.utils.parser
 
 open class StringParserEx(source: CharSequence,
-                          start: Int = 0,
-                          end: Int = source.length)
-    : StringParser(source, start, end) {
-
-    fun getString(start: Int = this.start, end: Int = this.pos): String {
-        return StringBuilder()
-                .append(this.source, start, end)
-                .toString()
-    }
+    start: Int = 0,
+    end: Int = source.length
+) : StringParser(source, start, end) {
 
     open fun isSpace(char: Char): Boolean {
         return Character.isSpaceChar(char)
     }
 
-    fun trimStart(str: String): String {
-        var i = 0
-        for (char in str) {
+    fun trimStart(string: CharSequence): String {
+        var start = 0
+        for (char in string) {
             if (!isSpace(char)) break
-            i++
+            start++
         }
-        return str.substring(i)
+        return string.substring(start)
     }
 
-    fun trimEnd(str: String): String {
-        var i = str.length
-        for (char in str.reversed()) {
-            if (!isSpace(char)) break
-            i--
+    fun trimEnd(string: CharSequence): String {
+        var end = string.length
+        while (end > 0 && isSpace(string[--end])) {
         }
-        return str.substring(0, i)
+        return string.substring(0, end)
     }
 
-//    open fun isDigit(char: Char): Boolean {
-//        return char in '0'..'9'
-//    }
-//
-//    open fun isHexDigit(char: Char): Boolean {
-//        return char in 'A'..'F' || char in 'a'..'f' || char in '0'..'9'
-//    }
+    fun trim(string: CharSequence): String {
+        var start = 0
+        for (char in string) {
+            if (!isSpace(char)) break
+            start++
+        }
 
-    fun parseChar(char: Char): Boolean {
+        var end = string.length
+        while (end > start && isSpace(string[--end])) {
+        }
+        return string.substring(start, end)
+    }
+
+    fun parseSpace(): Boolean {
         start()
-        if (!eof() && this.get() == char) {
-            next()
-        }
+        if (!eof() && isSpace(get())) next()
         return parsed()
     }
 
-    fun parseNoChar(char: Char): Boolean {
+    fun parseNoSpace(): Boolean {
         start()
-        if (!eof() && this.get() != char) {
-            next()
-        }
+        if (!eof() && !isSpace(get())) next()
         return parsed()
     }
 
-    fun parseDigits(): Int {
-        start()
-        var result = 0
-
-        loop@ while (!eof()) {
-            val char = get()
-
-            val code = if (char in '0'..'9') char - '0'
-            else break@loop
-
-            result = (result * 10) + code
-            next()
+    fun parseSpaces(): Boolean {
+        val parseStart = start()
+        while (parseSpace()) {
         }
-
-        return result
+        return parsed(parseStart)
     }
 
-    fun parseHexDigits(): Int {
-        start()
-        var result = 0
-
-        loop@ while (!eof()) {
-            val char = get()
-            val code = when (char) {
-                in '0'..'9' -> char - '0'
-                in 'A'..'F' -> char - 'A' + 10
-                in 'a'..'f' -> char - 'a' + 10
-                else        -> break@loop
-            }
-
-            result = (result shl 4) or code
-            next()
+    fun parseNoSpaces(): Boolean {
+        val parseStart = start()
+        while (parseNoSpace()) {
         }
-
-        return result
+        return parsed(parseStart)
     }
 }
