@@ -26,7 +26,7 @@ open class BaseHtmlDocument(
     private class State(
         var section: Section,
         var paragraph: Paragraph? = null,
-        val openedSpans: MutableList<Paragraph.Span> = mutableListOf()
+        val openedSpans: MutableList<Span> = mutableListOf()
     )
 
     override fun setText(text: String) {
@@ -113,10 +113,10 @@ open class BaseHtmlDocument(
                 // абзаца. Поэтому дробим спан, разделяя его по абзацам. Открытые спаны сохраняем
                 // в state.openedSpans
 
-                var span: Paragraph.Span? = null
+                var span: Span? = null
 
                 if (tag.name.isNotEmpty()) {
-                    span = Paragraph.Span()
+                    span = Span(0, -1, CharacterStyle(), BlockStyle())
                     config?.also {
                         it.onSetBlockStyle?.invoke(tag, span.blockStyle)
                         it.onSetCharacterStyle?.invoke(tag, span.characterStyle)
@@ -161,8 +161,7 @@ open class BaseHtmlDocument(
 
         // Переносим в созданный абзац открытые спаны
         for (span in state.openedSpans) {
-            paragraph.addSpan(
-                    Paragraph.Span(span.blockStyle.clone(), span.characterStyle.clone(), 0))
+            paragraph.addSpan(0, -1, span.characterStyle.clone(), span.blockStyle.clone())
         }
 
         // Закрываем текущий абзац
@@ -313,7 +312,7 @@ fun String.splitBySpace(): List<String> {
             parser.next()
         }
 
-        if (parser.parsed()) list.add(parser.getParsedText())
+        if (parser.parsed()) list.add(parser.getParsed())
 
         parser.next()
     }
