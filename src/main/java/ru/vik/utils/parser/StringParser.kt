@@ -16,14 +16,6 @@ open class StringParser(
 
     fun getString(start: Int = this.start, end: Int = this.pos) = this.source.substring(start, end)
 
-//    open fun isDigit(char: Char): Boolean {
-//        return char in '0'..'9'
-//    }
-//
-//    open fun isHexDigit(char: Char): Boolean {
-//        return char in 'A'..'F' || char in 'a'..'f' || char in '0'..'9'
-//    }
-
     fun parseChar(char: Char): Boolean {
         start()
         if (!eof() && this.get() == char) {
