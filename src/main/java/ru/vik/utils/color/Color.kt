@@ -6,7 +6,7 @@ import kotlin.math.roundToInt
 
 /**
  * Компоненты цвета через свойства.
- * color.a; color.r; color.g; color.b
+ * backgroundColor.a; backgroundColor.r; backgroundColor.g; backgroundColor.b
  */
 val Int.a get() = this ushr 24 and 0xff
 val Int.r get() = this ushr 16 and 0xff
@@ -14,6 +14,8 @@ val Int.g get() = this ushr 8 and 0xff
 val Int.b get() = this and 0xff
 
 fun Int.setA(value: Int) = (this and 0x00ffffff) or (value shl 24)
+fun Int.setA(value: Float) = (this and 0x00ffffff) or ((value * 255f).posRoundToInt() shl 24)
+fun Int.setA(value: Double) = (this and 0x00ffffff) or ((value * 255.0).posRoundToInt() shl 24)
 fun Int.setR(value: Int) = (this and 0xff0000.inv()) or (value shl 16)
 fun Int.setG(value: Int) = (this and 0xff00.inv()) or (value shl 8)
 fun Int.setB(value: Int) = (this and 0xff.inv()) or value
@@ -194,8 +196,24 @@ class Color {
             return (a shl 24) or (r shl 16) or (g shl 8) or b
         }
 
+        fun argb(a: Float, r: Int, g: Int, b: Int): Int {
+            return ((a * 255f).posRoundToInt() shl 24) or (r shl 16) or (g shl 8) or b
+        }
+
+        fun argb(a: Double, r: Int, g: Int, b: Int): Int {
+            return ((a * 255.0).posRoundToInt() shl 24) or (r shl 16) or (g shl 8) or b
+        }
+
         fun argb(a: Int, rgb: Int): Int {
             return (a shl 24) or rgb
+        }
+
+        fun argb(a: Float, rgb: Int): Int {
+            return ((a * 255f).posRoundToInt() shl 24) or rgb
+        }
+
+        fun argb(a: Double, rgb: Int): Int {
+            return ((a * 255.0).posRoundToInt() shl 24) or rgb
         }
 
         fun rgb(r: Int, g: Int, b: Int): Int {
