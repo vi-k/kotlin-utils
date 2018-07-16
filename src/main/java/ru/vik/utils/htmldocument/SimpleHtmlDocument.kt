@@ -133,7 +133,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
 
     fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
         tag.attributes["bgColor"]?.also {
-            it.toHtmlColor()?.also { blockStyle.color = it }
+            it.toHtmlColor()?.also { blockStyle.backgroundColor = it }
         }
 
         tag.attributes["margin"]?.also {
