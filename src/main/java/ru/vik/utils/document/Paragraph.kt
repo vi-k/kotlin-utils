@@ -3,9 +3,10 @@ package ru.vik.utils.document
 import ru.vik.utils.parser.StringParser
 import ru.vik.utils.parser.parseWord
 
-class Paragraph(text: String? = null) : ParagraphItem {
+class Paragraph(text: String? = null) : BlockStyle(), ParagraphItem {
     var parent: Section? = null
-    override val blockStyle = BlockStyle()
+
+    override val blockStyle get() = this as BlockStyle
     override val paragraphStyle = ParagraphStyle()
     override val characterStyle = CharacterStyle()
 

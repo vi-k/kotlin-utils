@@ -1,8 +1,9 @@
 package ru.vik.utils.document
 
-open class Section : ParagraphItem {
+open class Section : BlockStyle(), ParagraphItem {
     var parent: Section? = null
-    override val blockStyle = BlockStyle()
+
+    override val blockStyle get() = this as BlockStyle
     override val paragraphStyle = ParagraphStyle()
     override val characterStyle = CharacterStyle()
 
