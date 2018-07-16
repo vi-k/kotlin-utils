@@ -11,10 +11,11 @@ package ru.vik.utils.document
 open class Size(val size: Float, val units: Units) {
 
     enum class Units {
-        DP, EM, RATIO
+        PX, DP, EM, RATIO
     }
 
     companion object {
+        fun px(size: Float) = Size(size, Units.PX)
         fun dp(size: Float) = Size(size, Units.DP)
         fun em(size: Float) = Size(size, Units.EM)
         fun ratio(size: Float) = Size(size, Units.RATIO)
@@ -28,8 +29,8 @@ open class Size(val size: Float, val units: Units) {
         fun isNotEmpty(size: Size?) = size?.isNotEmpty() ?: false
     }
 
-    fun isAbsolute() = this.units == Units.DP
-    fun isRelative() = this.units != Units.DP
+    fun isAbsolute() = this.units == Units.PX || this.units == Units.DP
+    fun isRelative() = this.units != Units.PX && this.units != Units.DP
     fun isEmpty() = this.size == 0f
     fun isNotEmpty() = this.size != 0f
 
@@ -43,24 +44,27 @@ open class Size(val size: Float, val units: Units) {
         return if (this.units == Units.DP) this.size else default
     }
 
-    fun getDpOrZero(): Float {
+    fun getPixelsOrZero(): Float {
         return if (this.units == Units.DP) this.size else 0f
     }
 
     /**
-     * Преобразование размера в пиксели (DP), если это возможно.
+     * Преобразование размера в абсолютные единицы (DP или PX), если это возможно.
      *
      * @param fontSize Размер текущего шрифта для вычисления единиц, заданных в EM.
      * @param parentSize Размер родителя для вычисления единиц, заданных в RATIO.
      * @return 1) Размер в пикселях, если преобразование возможно; 2) this, если преобразование
      * невозможно (если и текущий, и родительский размер заданы в относительных единицах).
      */
-    fun tryToDp(fontSize: Size, parentSize: Float? = null): Size {
-        if (this.units == Units.RATIO && parentSize != null)
+    fun tryToAbsolute(fontSize: Size, parentSize: Float? = null): Size {
+        // RATIO, зависящая от parentSize
+        if (this.units == Units.RATIO && parentSize != null) {
             return dp(this.size * parentSize)
+        }
 
         if (this.isAbsolute() || fontSize.isRelative()) return this
 
+        // EM и RATIO, зависящая от размера шрифта
         return dp(this.size * fontSize.size)
     }
 
@@ -71,14 +75,16 @@ open class Size(val size: Float, val units: Units) {
      * @param fontSize Размер текущего шрифта для вычисления единиц, заданных в EM (размер шрифта
      * должен быть уже приведён к плотности устройства).
      * @param parentSize Размер родителя для вычисления единиц, заданных в RATIO (размер должен
-     * быть уже приведён к плотности устройства).
+     * быть уже приведён к плотности устройства). Если null, то размер вычисляется относительно
+     * размера шрифта.
      * @return Вычисленный размер в пикселях.
      */
-    fun toPixels(density: Float, fontSize: Float, parentSize: Float = 0f): Float {
+    fun toPixels(density: Float, fontSize: Float, parentSize: Float? = null): Float {
         return when (this.units) {
+            Units.PX    -> this.size
             Units.DP    -> this.size * density
             Units.EM    -> this.size * fontSize
-            Units.RATIO -> this.size * parentSize
+            Units.RATIO -> this.size * (parentSize ?: fontSize)
         }
     }
 }

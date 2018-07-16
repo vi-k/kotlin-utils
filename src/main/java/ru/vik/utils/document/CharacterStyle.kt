@@ -36,20 +36,38 @@ class CharacterStyle(
 
     fun clone() = CharacterStyle(this)
 
-    fun attach(characterStyle: CharacterStyle): CharacterStyle {
+    fun attach(characterStyle: CharacterStyle, density: Float): CharacterStyle {
         characterStyle.font?.also { this.font = it }
 
         // Смещение базовой линии рассчитываем до того, как изменим шрифт
-        val size = characterStyle.baselineShift.tryToDp(this.size)
-        when {
-            size.isRelative() -> this.baselineShift = characterStyle.baselineShift
-            this.baselineShift.isRelative() -> this.baselineShift = size
-            else -> {
-                this.baselineShift = Size(this.baselineShift.size + size.size, Size.Units.DP)
+        val size = characterStyle.baselineShift.tryToAbsolute(this.size)
+
+        if (this.baselineShift.isRelative()) {
+            // Если предыдущее значение не приведено к абсолютным величинам, игнорируем его
+            this.baselineShift = size
+        } else if (size.isAbsolute()) {
+            if (size.units == Size.Units.PX || this.baselineShift.units == Size.Units.PX) {
+                // Если хоть одно значение - предыдущее или заданное - указано в PX,
+                // приводим оба к PX
+                val newSize = if (this.baselineShift.units == Size.Units.DP) {
+                    this.baselineShift.size * density
+                } else {
+                    this.baselineShift.size
+                } + if (size.units == Size.Units.DP) {
+                    size.size * density
+                } else {
+                    size.size
+                }
+
+                this.baselineShift = Size.px(newSize)
+            }
+            else {
+                // Если оба значения в DP, оставляем в DP
+                this.baselineShift = Size.dp(this.baselineShift.size + size.size)
             }
         }
 
-        this.size = characterStyle.size.tryToDp(this.size)
+        this.size = characterStyle.size.tryToAbsolute(this.size)
         this.scaleX *= characterStyle.scaleX
         characterStyle.bold?.also { this.bold = it }
         characterStyle.italic?.also { this.italic = it }

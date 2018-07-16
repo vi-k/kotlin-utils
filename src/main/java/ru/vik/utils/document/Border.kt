@@ -11,11 +11,10 @@ open class Border(
 
     enum class Type { SOLID }
 
-    // Клонирование не нужно, пока тип иммутабельный
-//    fun clone(): Border {
-//    }
-
     companion object {
+        fun px(size: Float, color: Int, type: Type = Type.SOLID) =
+                Border(size, Units.PX, color, type)
+
         fun dp(size: Float, color: Int, type: Type = Type.SOLID) =
                 Border(size, Units.DP, color, type)
 
