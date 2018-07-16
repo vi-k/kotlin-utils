@@ -4,5 +4,5 @@ class Span(
     var start: Int,
     var end: Int,
     val characterStyle: CharacterStyle,
-    val blockStyle: BlockStyle = BlockStyle()
+    val borderStyle: BorderStyle = BorderStyle()
 )

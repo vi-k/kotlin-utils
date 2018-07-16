@@ -1,21 +1,40 @@
 package ru.vik.utils.document
 
+import ru.vik.utils.color.Color
+
 class CharacterStyle(
-        var font: String? = null,
-        var size: Size = Size.em(1f),
-        var scaleX: Float = 1f,
-        var bold: Boolean? = null,
-        var italic: Boolean? = null,
-        var underline: Boolean? = null,
-        var strike: Boolean? = null,
-        var color: Int? = null,
-        var baselineShift: Size = Size.dp(0f),
-        var letterSpacing: Float? = null,
-        var allCaps: Caps? = null) {
+    var font: String? = null,
+    var size: Size = Size.em(1f),
+    var scaleX: Float = 1f,
+    var bold: Boolean? = null,
+    var italic: Boolean? = null,
+    var underline: Boolean? = null,
+    var strike: Boolean? = null,
+    var color: Int? = null,
+    var baselineShift: Size = Size.dp(0f),
+    var letterSpacing: Float? = null,
+    var allCaps: Caps? = null
+) {
 
     enum class Caps {
         NONE, ALL_CAPS, SMALL_CAPS
     }
+
+    constructor(characterStyle: CharacterStyle?) : this(
+            font = characterStyle?.font,
+            size = characterStyle?.size ?: Size.em(1f),
+            scaleX = characterStyle?.scaleX ?: 1f,
+            bold = characterStyle?.bold,
+            italic = characterStyle?.italic,
+            underline = characterStyle?.underline,
+            strike = characterStyle?.strike,
+            color = characterStyle?.color,
+            baselineShift = characterStyle?.baselineShift ?: Size.dp(0f),
+            letterSpacing = characterStyle?.letterSpacing,
+            allCaps = characterStyle?.allCaps
+    )
+
+    fun clone() = CharacterStyle(this)
 
     fun attach(characterStyle: CharacterStyle): CharacterStyle {
         characterStyle.font?.also { this.font = it }
@@ -42,20 +61,6 @@ class CharacterStyle(
         return this
     }
 
-    fun clone() = CharacterStyle(
-            font = this.font,
-            size = this.size,
-            scaleX = this.scaleX,
-            bold = this.bold,
-            italic = this.italic,
-            underline = this.underline,
-            strike = this.strike,
-            color = this.color,
-            baselineShift = this.baselineShift,
-            letterSpacing = this.letterSpacing,
-            allCaps = this.allCaps
-    )
-
     companion object {
         fun default() = CharacterStyle(
                 font = null,
@@ -65,7 +70,7 @@ class CharacterStyle(
                 italic = false,
                 underline = false,
                 strike = false,
-                color = 0x00ffffff.inv(),
+                color = Color.BLACK,
                 baselineShift = Size.dp(0f),
                 letterSpacing = 0f,
                 allCaps = Caps.NONE

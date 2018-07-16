@@ -11,169 +11,169 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         // Sections
         addTag("div", TagConfig(
                 type = Tag.Type.SECTION,
-                onSetBlockStyle = ::setBSFromAttributes,
-                onSetParagraphStyle = ::setPSFromAttributes,
-                onSetCharacterStyle = ::setCSFromAttributes))
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
+                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
+                onSetCharacterStyle = ::setCharacterStyleFromAttributes))
 
         // Paragraphs
         addTag("p", TagConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBlockStyle = ::setBSFromAttributes,
-                onSetParagraphStyle = ::setPSFromAttributes,
-                onSetCharacterStyle = ::setCSFromAttributes))
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
+                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
+                onSetCharacterStyle = ::setCharacterStyleFromAttributes))
 
         addTag("h1", TagConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBlockStyle = ::setBSFromAttributes,
-                onSetParagraphStyle = ::setPSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
+                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.size = Size.em(1.6f)
                     characterStyle.bold = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("h2", TagConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBlockStyle = ::setBSFromAttributes,
-                onSetParagraphStyle = ::setPSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
+                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.size = Size.em(1.4f)
                     characterStyle.bold = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("h3", TagConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBlockStyle = ::setBSFromAttributes,
-                onSetParagraphStyle = ::setPSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
+                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.size = Size.em(1.2f)
                     characterStyle.bold = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("blockquote", TagConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBlockStyle = { tag, blockStyle ->
-                    blockStyle.marginLeft = Size.em(2f)
-                    setBSFromAttributes(tag, blockStyle)
+                onSetBorderStyle = { tag, borderStyle ->
+                    borderStyle.marginLeft = Size.em(2f)
+                    setBorderStyleFromAttributes(tag, borderStyle)
                 },
-                onSetParagraphStyle = ::setPSFromAttributes,
-                onSetCharacterStyle = ::setCSFromAttributes))
+                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
+                onSetCharacterStyle = ::setCharacterStyleFromAttributes))
 
         // Spans
         addTag("b", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.bold = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("i", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.italic = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("s", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.strike = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("strike", getTagConfig("s")!!)
 
         addTag("span", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
-                onSetCharacterStyle = ::setCSFromAttributes))
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
+                onSetCharacterStyle = ::setCharacterStyleFromAttributes))
 
         addTag("font", getTagConfig("span")!!)
 
         addTag("sub", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.size = Size.em(0.85f)
                     characterStyle.baselineShift = Size.em(0.25f)
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("sup", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.size = Size.em(0.85f)
                     characterStyle.baselineShift = Size.em(-0.4f)
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("small", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.size = Size.em(0.85f)
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 }))
 
         addTag("u", TagConfig(
                 type = Tag.Type.CHARACTER,
-                onSetBlockStyle = ::setBSFromAttributes,
+                onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetCharacterStyle = { tag, characterStyle ->
                     characterStyle.underline = true
-                    setCSFromAttributes(tag, characterStyle)
+                    setCharacterStyleFromAttributes(tag, characterStyle)
                 })
         )
     }
 
-    fun setBSFromAttributes(tag: Tag, blockStyle: BlockStyle) {
+    fun setBorderStyleFromAttributes(tag: Tag, borderStyle: BorderStyle) {
         tag.attributes["bgColor"]?.also {
-            it.toHtmlColor()?.also { blockStyle.backgroundColor = it }
+            it.toHtmlColor()?.also { borderStyle.backgroundColor = it }
         }
 
         tag.attributes["margin"]?.also {
-            it.toHtmlSize()?.also { blockStyle.setMargin(it) }
+            it.toHtmlSize()?.also { borderStyle.setMargin(it) }
         }
 
         tag.attributes["marginTop"]?.also {
-            it.toHtmlSize()?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { borderStyle.marginTop = it }
         }
 
         tag.attributes["marginRight"]?.also {
-            it.toHtmlSize()?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { borderStyle.marginTop = it }
         }
 
         tag.attributes["marginBottom"]?.also {
-            it.toHtmlSize()?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { borderStyle.marginTop = it }
         }
 
         tag.attributes["marginLeft"]?.also {
-            it.toHtmlSize()?.also { blockStyle.marginTop = it }
+            it.toHtmlSize()?.also { borderStyle.marginTop = it }
         }
 
         tag.attributes["padding"]?.also {
-            it.toHtmlSize()?.also { blockStyle.setPadding(it) }
+            it.toHtmlSize()?.also { borderStyle.setPadding(it) }
         }
 
         tag.attributes["paddingTop"]?.also {
-            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { borderStyle.paddingTop = it }
         }
 
         tag.attributes["paddingRight"]?.also {
-            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { borderStyle.paddingTop = it }
         }
 
         tag.attributes["paddingBottom"]?.also {
-            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { borderStyle.paddingTop = it }
         }
 
         tag.attributes["paddingLeft"]?.also {
-            it.toHtmlSize()?.also { blockStyle.paddingTop = it }
+            it.toHtmlSize()?.also { borderStyle.paddingTop = it }
         }
 
         tag.attributes["border"]?.also {
@@ -181,7 +181,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             if (list.size >= 2) {
                 list[0].toHtmlSize(false)?.also { size ->
                     list[1].toHtmlColor()?.also { color ->
-                        blockStyle.setBorder(Border(size, color))
+                        borderStyle.setBorder(Border(size, color))
                     }
                 }
             }
@@ -192,7 +192,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             if (list.size >= 2) {
                 list[0].toHtmlSize(false)?.also { size ->
                     list[1].toHtmlColor()?.also { color ->
-                        blockStyle.borderTop = Border(size, color)
+                        borderStyle.borderTop = Border(size, color)
                     }
                 }
             }
@@ -203,7 +203,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             if (list.size >= 2) {
                 list[0].toHtmlSize(false)?.also { size ->
                     list[1].toHtmlColor()?.also { color ->
-                        blockStyle.borderRight = Border(size, color)
+                        borderStyle.borderRight = Border(size, color)
                     }
                 }
             }
@@ -214,7 +214,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             if (list.size >= 2) {
                 list[0].toHtmlSize(false)?.also { size ->
                     list[1].toHtmlColor()?.also { color ->
-                        blockStyle.borderBottom = Border(size, color)
+                        borderStyle.borderBottom = Border(size, color)
                     }
                 }
             }
@@ -225,14 +225,14 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             if (list.size >= 2) {
                 list[0].toHtmlSize(false)?.also { size ->
                     list[1].toHtmlColor()?.also { color ->
-                        blockStyle.borderLeft = Border(size, color)
+                        borderStyle.borderLeft = Border(size, color)
                     }
                 }
             }
         }
     }
 
-    fun setPSFromAttributes(tag: Tag, paragraphStyle: ParagraphStyle) {
+    fun setParagraphStyleFromAttributes(tag: Tag, paragraphStyle: ParagraphStyle) {
         tag.attributes["align"]?.also {
             when (it) {
                 "left" -> paragraphStyle.align = ParagraphStyle.Align.LEFT
@@ -277,7 +277,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         }
     }
 
-    fun setCSFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
+    fun setCharacterStyleFromAttributes(tag: Tag, characterStyle: CharacterStyle) {
         tag.attributes["font"]?.also {
             characterStyle.font = it
         }

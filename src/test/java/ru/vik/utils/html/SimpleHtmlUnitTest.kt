@@ -69,16 +69,16 @@ class SimpleHtmlUnitTest {
         assertEquals(1, parser.root!!.children[2].children.size)
 
         // Проверка пересекающихся тегов
-        parser.parse("<i>i,<b>bi,<s>bis,</i>blockStyle,</b>s</s> <div>1<p>2</div>3</p>")
+        parser.parse("<i>i,<b>bi,<s>bis,</i>bs,</b>s</s> <div>1<p>2</div>3</p>")
         assertEquals(
-                "<i>i,<b>bi,<s>bis,</s></b></i><b><s>blockStyle,</s></b><s>s</s>" +
+                "<i>i,<b>bi,<s>bis,</s></b></i><b><s>bs,</s></b><s>s</s>" +
                         "<div>1<p>2</p></div>3&lt;/p&gt;",
                 parser.toString())
 
-        parser.parse("<i ii=1>i,<b bb=2>bi,<s ss=3>bis,</i>blockStyle,</b>s</s>")
+        parser.parse("<i ii=1>i,<b bb=2>bi,<s ss=3>bis,</i>bs,</b>s</s>")
         assertEquals(
                 "<i ii='1'>i,<b bb='2'>bi,<s ss='3'>bis,</s></b></i>" +
-                        "<b bb='2'><s ss='3'>blockStyle,</s></b><s ss='3'>s</s>",
+                        "<b bb='2'><s ss='3'>bs,</s></b><s ss='3'>s</s>",
                 parser.toString())
     }
 }

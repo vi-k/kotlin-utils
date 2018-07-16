@@ -8,7 +8,7 @@ import ru.vik.utils.html.Tag
 import ru.vik.utils.math.simpleRoundToInt
 import ru.vik.utils.parser.StringParser
 
-typealias SetBlockStyleHandler = (Tag, BlockStyle) -> Unit
+typealias SetBorderStyleHandler = (Tag, BorderStyle) -> Unit
 typealias SetParagraphStyleHandler = (Tag, ParagraphStyle) -> Unit
 typealias SetCharacterStyleHandler = (Tag, CharacterStyle) -> Unit
 
@@ -18,7 +18,7 @@ open class BaseHtmlDocument(
 
     class TagConfig(
         type: Tag.Type,
-        var onSetBlockStyle: SetBlockStyleHandler? = null,
+        var onSetBorderStyle: SetBorderStyleHandler? = null,
         var onSetParagraphStyle: SetParagraphStyleHandler? = null,
         var onSetCharacterStyle: SetCharacterStyleHandler? = null
     ) : BaseHtml.BaseTagConfig(type)
@@ -57,7 +57,7 @@ open class BaseHtmlDocument(
 
                 val section = if (isRoot) state.section else Section()
                 config?.also {
-                    it.onSetBlockStyle?.invoke(tag, section.blockStyle)
+                    it.onSetBorderStyle?.invoke(tag, section.borderStyle)
                     it.onSetParagraphStyle?.invoke(tag, section.paragraphStyle)
                     it.onSetCharacterStyle?.invoke(tag, section.characterStyle)
                 }
@@ -94,7 +94,7 @@ open class BaseHtmlDocument(
                 val paragraph = appendParagraph(state, tag.text)
 
                 config?.also {
-                    it.onSetBlockStyle?.invoke(tag, paragraph.blockStyle)
+                    it.onSetBorderStyle?.invoke(tag, paragraph.borderStyle)
                     it.onSetParagraphStyle?.invoke(tag, paragraph.paragraphStyle)
                     it.onSetCharacterStyle?.invoke(tag, paragraph.characterStyle)
                 }
@@ -116,9 +116,9 @@ open class BaseHtmlDocument(
                 var span: Span? = null
 
                 if (tag.name.isNotEmpty()) {
-                    span = Span(0, -1, CharacterStyle(), BlockStyle())
+                    span = Span(0, -1, CharacterStyle(), BorderStyle())
                     config?.also {
-                        it.onSetBlockStyle?.invoke(tag, span.blockStyle)
+                        it.onSetBorderStyle?.invoke(tag, span.borderStyle)
                         it.onSetCharacterStyle?.invoke(tag, span.characterStyle)
                     }
                 }
@@ -161,7 +161,8 @@ open class BaseHtmlDocument(
 
         // Переносим в созданный абзац открытые спаны
         for (span in state.openedSpans) {
-            paragraph.addSpan(0, -1, span.characterStyle.clone(), span.blockStyle.clone())
+            paragraph.addSpan(0, -1,
+                    span.characterStyle.clone(), span.borderStyle.clone())
         }
 
         // Закрываем текущий абзац

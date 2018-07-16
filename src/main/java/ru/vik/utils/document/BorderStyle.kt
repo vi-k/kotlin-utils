@@ -1,6 +1,6 @@
 package ru.vik.utils.document
 
-open class BlockStyle(
+open class BorderStyle(
     var marginTop: Size? = null,
     var marginRight: Size? = null,
     var marginBottom: Size? = null,
@@ -15,23 +15,41 @@ open class BlockStyle(
     var paddingLeft: Size? = null,
     var backgroundColor: Int = 0
 ) {
-    fun clone() = BlockStyle(
-            marginTop = this.marginTop,
-            marginRight = this.marginRight,
-            marginBottom = this.marginBottom,
-            marginLeft = this.marginLeft,
-            borderTop = this.borderTop,
-            borderRight = this.borderRight,
-            borderBottom = this.borderBottom,
-            borderLeft = this.borderLeft,
-            paddingTop = this.paddingTop,
-            paddingRight = this.paddingRight,
-            paddingBottom = this.paddingBottom,
-            paddingLeft = this.paddingLeft,
-            backgroundColor = this.backgroundColor
-    )
+    constructor(borderStyle: BorderStyle?) : this(
+            marginTop = borderStyle?.marginTop,
+            marginRight = borderStyle?.marginRight,
+            marginBottom = borderStyle?.marginBottom,
+            marginLeft = borderStyle?.marginLeft,
+            borderTop = borderStyle?.borderTop,
+            borderRight = borderStyle?.borderRight,
+            borderBottom = borderStyle?.borderBottom,
+            borderLeft = borderStyle?.borderLeft,
+            paddingTop = borderStyle?.paddingTop,
+            paddingRight = borderStyle?.paddingRight,
+            paddingBottom = borderStyle?.paddingBottom,
+            paddingLeft = borderStyle?.paddingLeft,
+            backgroundColor = borderStyle?.backgroundColor ?: 0)
 
-    fun setMargin(margin: Size?): BlockStyle {
+    open fun clone() = BorderStyle(this)
+
+    fun attach(borderStyle: BorderStyle): BorderStyle {
+        borderStyle.marginTop?.also { this.marginTop = it }
+        borderStyle.marginRight?.also { this.marginRight = it }
+        borderStyle.marginBottom?.also { this.marginBottom = it }
+        borderStyle.marginLeft?.also { this.marginLeft = it }
+        borderStyle.borderTop?.also { this.borderTop = it }
+        borderStyle.borderRight?.also { this.borderRight = it }
+        borderStyle.borderBottom?.also { this.borderBottom = it }
+        borderStyle.borderLeft?.also { this.borderLeft = it }
+        borderStyle.paddingTop?.also { this.paddingTop = it }
+        borderStyle.paddingRight?.also { this.paddingRight = it }
+        borderStyle.paddingBottom?.also { this.paddingBottom = it }
+        borderStyle.paddingLeft?.also { this.paddingLeft = it }
+        this.backgroundColor = borderStyle.backgroundColor
+        return this
+    }
+
+    open fun setMargin(margin: Size?): BorderStyle {
         this.marginTop = margin
         this.marginRight = margin
         this.marginBottom = margin
@@ -39,7 +57,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setMargin(topAndBottom: Size?, leftAndRight: Size?): BlockStyle {
+    open fun setMargin(topAndBottom: Size?, leftAndRight: Size?): BorderStyle {
         this.marginTop = topAndBottom
         this.marginRight = leftAndRight
         this.marginBottom = topAndBottom
@@ -47,7 +65,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setMargin(top: Size?, leftAndRight: Size?, bottom: Size?): BlockStyle {
+    open fun setMargin(top: Size?, leftAndRight: Size?, bottom: Size?): BorderStyle {
         this.marginTop = top
         this.marginRight = leftAndRight
         this.marginBottom = bottom
@@ -55,7 +73,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setMargin(top: Size?, right: Size?, bottom: Size?, left: Size?): BlockStyle {
+    open fun setMargin(top: Size?, right: Size?, bottom: Size?, left: Size?): BorderStyle {
         this.marginTop = top
         this.marginRight = right
         this.marginBottom = bottom
@@ -63,7 +81,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setPadding(padding: Size?): BlockStyle {
+    open fun setPadding(padding: Size?): BorderStyle {
         this.paddingTop = padding
         this.paddingRight = padding
         this.paddingBottom = padding
@@ -71,7 +89,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setPadding(topAndBottom: Size?, leftAndRight: Size?): BlockStyle {
+    open fun setPadding(topAndBottom: Size?, leftAndRight: Size?): BorderStyle {
         this.paddingTop = topAndBottom
         this.paddingRight = leftAndRight
         this.paddingBottom = topAndBottom
@@ -79,7 +97,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setPadding(top: Size?, leftAndRight: Size?, bottom: Size?): BlockStyle {
+    open fun setPadding(top: Size?, leftAndRight: Size?, bottom: Size?): BorderStyle {
         this.paddingTop = top
         this.paddingRight = leftAndRight
         this.paddingBottom = bottom
@@ -87,7 +105,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setPadding(top: Size?, right: Size?, bottom: Size?, left: Size?): BlockStyle {
+    open fun setPadding(top: Size?, right: Size?, bottom: Size?, left: Size?): BorderStyle {
         this.paddingTop = top
         this.paddingRight = right
         this.paddingBottom = bottom
@@ -95,7 +113,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setBorder(border: Border?): BlockStyle {
+    open fun setBorder(border: Border?): BorderStyle {
         this.borderTop = border
         this.borderRight = border
         this.borderBottom = border
@@ -103,7 +121,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setBorder(topAndBottom: Border?, leftAndRight: Border?): BlockStyle {
+    open fun setBorder(topAndBottom: Border?, leftAndRight: Border?): BorderStyle {
         this.borderTop = topAndBottom
         this.borderRight = leftAndRight
         this.borderBottom = topAndBottom
@@ -111,7 +129,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setBorder(top: Border?, leftAndRight: Border?, bottom: Border?): BlockStyle {
+    open fun setBorder(top: Border?, leftAndRight: Border?, bottom: Border?): BorderStyle {
         this.borderTop = top
         this.borderRight = leftAndRight
         this.borderBottom = bottom
@@ -119,7 +137,7 @@ open class BlockStyle(
         return this
     }
 
-    fun setBorder(top: Border?, right: Border?, bottom: Border?, left: Border?): BlockStyle {
+    open fun setBorder(top: Border?, right: Border?, bottom: Border?, left: Border?): BorderStyle {
         this.borderTop = top
         this.borderRight = right
         this.borderBottom = bottom
@@ -135,12 +153,12 @@ open class BlockStyle(
                 this.borderLeft?.let { it.color != 0 && it.size != 0f } == true)
     }
 
-    fun setBackgroundColor(color: Int): BlockStyle {
+    open fun setBackgroundColor(color: Int): BorderStyle {
         this.backgroundColor = color
         return this
     }
 
     companion object {
-        fun default() = BlockStyle()
+        fun default() = BorderStyle()
     }
 }
