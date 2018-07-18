@@ -1,4 +1,4 @@
-package ru.vik.utils
+package ru.vik.utils.wordbreaks
 
 import org.junit.Test
 

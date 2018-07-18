@@ -1,4 +1,4 @@
-package ru.vik.utils
+package ru.vik.utils.color
 
 import org.junit.Test
 
