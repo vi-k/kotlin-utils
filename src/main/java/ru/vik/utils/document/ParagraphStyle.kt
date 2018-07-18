@@ -69,47 +69,47 @@ class ParagraphStyle(
         return this
     }
 
-    fun setTopIndent(size: Size): ParagraphStyle {
+    fun setTopIndent(size: Size?): ParagraphStyle {
         this.topIndent = size
         return this
     }
 
-    fun setRightIndent(size: Size): ParagraphStyle {
+    fun setRightIndent(size: Size?): ParagraphStyle {
         this.rightIndent = size
         return this
     }
 
-    fun setBottomIndent(size: Size): ParagraphStyle {
+    fun setBottomIndent(size: Size?): ParagraphStyle {
         this.bottomIndent = size
         return this
     }
 
-    fun setLeftIndent(size: Size): ParagraphStyle {
+    fun setLeftIndent(size: Size?): ParagraphStyle {
         this.leftIndent = size
         return this
     }
 
-    fun setAlign(align: Align): ParagraphStyle {
+    fun setAlign(align: Align?): ParagraphStyle {
         this.align = align
         return this
     }
 
-    fun setFirstAlign(align: Align): ParagraphStyle {
+    fun setFirstAlign(align: Align?): ParagraphStyle {
         this.firstAlign = align
         return this
     }
 
-    fun setFirstLeftIndent(size: Size): ParagraphStyle {
+    fun setFirstLeftIndent(size: Size?): ParagraphStyle {
         this.firstLeftIndent = size
         return this
     }
 
-    fun setFirstRightIndent(size: Size): ParagraphStyle {
+    fun setFirstRightIndent(size: Size?): ParagraphStyle {
         this.firstRightIndent = size
         return this
     }
 
-    fun setLastAlign(align: Align): ParagraphStyle {
+    fun setLastAlign(align: Align?): ParagraphStyle {
         this.lastAlign = align
         return this
     }
