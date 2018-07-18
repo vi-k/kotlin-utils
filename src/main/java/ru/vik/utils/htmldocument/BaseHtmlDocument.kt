@@ -118,15 +118,15 @@ open class BaseHtmlDocument(
                 if (tag.name.isNotEmpty()) {
                     span = Span(0, -1, CharacterStyle(), BorderStyle())
                     config?.also {
-                        it.onSetBorderStyle?.invoke(tag, span.borderStyle)
+                        it.onSetBorderStyle?.invoke(tag, span.borderStyle!!)
                         it.onSetCharacterStyle?.invoke(tag, span.characterStyle)
                     }
                 }
 
                 val paragraph = state.paragraph ?: appendParagraph(state)
 
-                span?.start = paragraph.text.length
-                paragraph.text.append(tag.text)
+                span?.start = paragraph.textBuilder.length
+                paragraph.textBuilder.append(tag.text)
 
                 span?.also {
                     paragraph.addSpan(it)
@@ -138,14 +138,14 @@ open class BaseHtmlDocument(
                 }
 
                 span?.also {
-                    it.end = paragraph.text.length
+                    it.end = paragraph.textBuilder.length
                     state.openedSpans.remove(it)
                 }
             }
 
             Tag.Type.BR -> {
                 val paragraph = state.paragraph ?: appendParagraph(state)
-                paragraph.text.append('\n')
+                paragraph.textBuilder.append('\n')
             }
 
             Tag.Type.UNKNOWN -> {
@@ -162,7 +162,7 @@ open class BaseHtmlDocument(
         // Переносим в созданный абзац открытые спаны
         for (span in state.openedSpans) {
             paragraph.addSpan(0, -1,
-                    span.characterStyle.clone(), span.borderStyle.clone())
+                    span.characterStyle.clone(), span.borderStyle!!.clone())
         }
 
         // Закрываем текущий абзац
@@ -182,7 +182,7 @@ open class BaseHtmlDocument(
         state.paragraph?.also {
             for (span in it.spans) {
                 if (span.end == -1) {
-                    span.end = it.text.length
+                    span.end = it.textBuilder.length
                 }
             }
         }
