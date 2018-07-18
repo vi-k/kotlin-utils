@@ -10,38 +10,87 @@ class Paragraph(text: String? = null) : ParagraphItem {
     override val paragraphStyle = ParagraphStyle()
     override val characterStyle = CharacterStyle()
 
-    val text = if (text != null) StringBuilder(text) else StringBuilder()
+    internal val textBuilder = if (text != null) StringBuilder(text) else StringBuilder()
+    override val text: CharSequence get() = this.textBuilder
+
     val spans = mutableListOf<Span>()
 
-//    fun setText(text: String) {
-//        this.text.setLength(0)
-//        this.text.append(text)
+//    fun setText(textBuilder: String) {
+//        this.textBuilder.setLength(0)
+//        this.textBuilder.append(textBuilder)
 //        this.spans.clear()
 //    }
 
+    /**
+     * Добавление участка форматирования
+     *
+     * Если span.start положительное число, то span.end тоже должен быть положительным, большим,
+     * чем span.start. Если же span.end отрицательное, то участок распространяется
+     * до конца строки. Если span.start отрицательное число, то начало участка отсчитывается
+     * с конца абзаца, в этом случае span.end тоже должен быть отрицательным числом. Если же
+     * span.end положительное или равно 0, то участок распространяется до конца строки
+     */
     override fun addSpan(span: Span): Paragraph {
+        val length = this.textBuilder.length
+
+        if (span.start >= 0 && span.end < 0 || span.start < 0 && span.end >= 0) {
+            span.end = length
+        }
+
+        if (span.start < 0) {
+            span.start = length + span.start
+            if (span.end < 0) {
+                span.end = length + span.end
+            }
+        }
+
         this.spans.add(span)
         return this
     }
 
     override fun addSpan(start: Int, end: Int, characterStyle: CharacterStyle,
-        borderStyle: BorderStyle
+        borderStyle: BorderStyle?
     ): Paragraph {
         addSpan(Span(start, end, characterStyle, borderStyle))
         return this
     }
 
+    @Suppress("NAME_SHADOWING")
+    override fun addSpan(regex: Regex, count: Int, characterStyle: CharacterStyle,
+        borderStyle: BorderStyle?
+    ): Paragraph {
+        var count = count
+
+        var result = regex.find(this.textBuilder)
+        while (result != null && count != 0) {
+            val span = Span(result.range.start, result.range.start + result.value.length,
+                    characterStyle, borderStyle)
+            addSpan(span)
+
+            result = result.next()
+            count--
+        }
+
+        return this
+    }
+
+    override fun addSpan(regex: Regex, characterStyle: CharacterStyle,
+        borderStyle: BorderStyle?
+    ): Paragraph {
+        return addSpan(regex, -1, characterStyle, borderStyle)
+    }
+
     override fun addWordSpan(numberOfWord: Int, characterStyle: CharacterStyle,
-        borderStyle: BorderStyle
+        borderStyle: BorderStyle?
     ): Paragraph {
         return addWordSpan(numberOfWord, 1, characterStyle, borderStyle)
     }
 
     override fun addWordSpan(numberOfWord: Int, count: Int, characterStyle: CharacterStyle,
-        borderStyle: BorderStyle
+        borderStyle: BorderStyle?
     ): Paragraph {
         if (count != 0) {
-            val parser = StringParser(this.text)
+            val parser = StringParser(this.textBuilder)
             if (parser.parseWord(numberOfWord)) {
                 val start = parser.start
                 var end = parser.pos
@@ -61,28 +110,11 @@ class Paragraph(text: String? = null) : ParagraphItem {
     }
 
     override fun findWord(numberOfWord: Int): Int {
-        val parser = StringParser(this.text)
+        val parser = StringParser(this.textBuilder)
         if (parser.parseWord(numberOfWord)) {
             return parser.start
         }
 
         return -1
     }
-
-//    override fun setMargin(margin: Size?): Paragraph = super.setMargin(margin) as Paragraph
-//    override fun setMargin(topAndBottom: Size?, leftAndRight: Size?): Paragraph = super.setMargin(topAndBottom, leftAndRight) as Paragraph
-//    override fun setMargin(top: Size?, leftAndRight: Size?, bottom: Size?): Paragraph = super.setMargin(top, leftAndRight, bottom) as Paragraph
-//    override fun setMargin(top: Size?, right: Size?, bottom: Size?, left: Size?): Paragraph = super.setMargin(top, right, bottom, left) as Paragraph
-//
-//    override fun setPadding(padding: Size?): Paragraph = super.setPadding(padding) as Paragraph
-//    override fun setPadding(topAndBottom: Size?, leftAndRight: Size?): Paragraph = super.setPadding(topAndBottom, leftAndRight) as Paragraph
-//    override fun setPadding(top: Size?, leftAndRight: Size?, bottom: Size?): Paragraph = super.setPadding(top, leftAndRight, bottom) as Paragraph
-//    override fun setPadding(top: Size?, right: Size?, bottom: Size?, left: Size?): Paragraph = super.setPadding(top, right, bottom, left) as Paragraph
-//
-//    override fun setBorder(border: Border?): Paragraph = super.setBorder(border) as Paragraph
-//    override fun setBorder(topAndBottom: Border?, leftAndRight: Border?): Paragraph = super.setBorder(topAndBottom, leftAndRight) as Paragraph
-//    override fun setBorder(top: Border?, leftAndRight: Border?, bottom: Border?): Paragraph = super.setBorder(top, leftAndRight, bottom) as Paragraph
-//    override fun setBorder(top: Border?, right: Border?, bottom: Border?, left: Border?): Paragraph = super.setBorder(top, right, bottom, left) as Paragraph
-//
-//    override fun setBackgroundColor(color: Int): Paragraph = super.setBackgroundColor(color) as Paragraph
 }
