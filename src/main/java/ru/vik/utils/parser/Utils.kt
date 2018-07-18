@@ -19,7 +19,7 @@ fun StringParser.parseWord(numberOfWord: Int): Boolean {
         // Ищем конец слова
         while (!eof()) {
             val char = get()
-            if (!Character.isLetterOrDigit(char) && char != '-' && char != '_') break
+            if (!Character.isLetterOrDigit(char) && char != '-' && char != '_' && char != '\u00AD') break
             next()
         }
 
