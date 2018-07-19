@@ -280,7 +280,7 @@ fun String.toHtmlSize(allowPercent: Boolean = true): Size? {
     reSize.find(this)?.also {
         it.groupValues[1].toFloatOrNull()?.also { num ->
             return when (it.groupValues[3].toLowerCase()) {
-                "%" -> if (allowPercent) Size.percent(num) else null
+                "%" -> if (allowPercent) Size.ratio(num / 100f) else null
                 "em" -> Size.em(num)
                 else -> Size.dp(num)
             }
