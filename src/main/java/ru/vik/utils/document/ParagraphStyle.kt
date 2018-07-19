@@ -1,19 +1,21 @@
 package ru.vik.utils.document
 
 class ParagraphStyle(
-    var topIndent: Size? = null,
-    var rightIndent: Size? = null,
-    var bottomIndent: Size? = null,
-    var leftIndent: Size? = null,
     var align: Align? = null,
+    var spaceBefore: Size? = null,
+    var spaceAfter: Size? = null,
+    var leftIndent: Size? = null,
+    var rightIndent: Size? = null,
     var firstAlign: Align? = null,
     var firstLeftIndent: Size? = null,
     var firstRightIndent: Size? = null,
     var lastAlign: Align? = null
+
 //    var dropCapCharacters: Int? = null,
 //    var dropCapLines: Int? = null,
 //    var dropCapStyle: CharacterStyle? = null,
 //    var tabStop: Int? = null,
+
 //    var baselineTop: Float? = null,
 //    var baselineGrid: Float? = null,
 //    var baselineBottom: Float? = null,
@@ -28,11 +30,11 @@ class ParagraphStyle(
     }
 
     constructor(paragraphStyle: ParagraphStyle) : this(
-            topIndent = paragraphStyle.topIndent,
-            rightIndent = paragraphStyle.rightIndent,
-            bottomIndent = paragraphStyle.bottomIndent,
-            leftIndent = paragraphStyle.leftIndent,
             align = paragraphStyle.align,
+            spaceBefore = paragraphStyle.spaceBefore,
+            spaceAfter = paragraphStyle.spaceAfter,
+            leftIndent = paragraphStyle.leftIndent,
+            rightIndent = paragraphStyle.rightIndent,
             firstAlign = paragraphStyle.firstAlign,
             firstLeftIndent = paragraphStyle.firstLeftIndent,
             firstRightIndent = paragraphStyle.firstRightIndent,
@@ -50,10 +52,10 @@ class ParagraphStyle(
 
     fun attach(paragraphStyle: ParagraphStyle): ParagraphStyle {
         paragraphStyle.align?.also { this.align = it }
-        paragraphStyle.topIndent?.also { this.topIndent = it }
-        paragraphStyle.rightIndent?.also { this.rightIndent = it }
-        paragraphStyle.bottomIndent?.also { this.bottomIndent = it }
+        paragraphStyle.spaceBefore?.also { this.spaceBefore = it }
+        paragraphStyle.spaceAfter?.also { this.spaceAfter = it }
         paragraphStyle.leftIndent?.also { this.leftIndent = it }
+        paragraphStyle.rightIndent?.also { this.rightIndent = it }
         paragraphStyle.firstAlign?.also { this.firstAlign = it }
         paragraphStyle.firstLeftIndent?.also { this.firstLeftIndent = it }
         paragraphStyle.firstRightIndent?.also { this.firstRightIndent = it }
@@ -69,18 +71,18 @@ class ParagraphStyle(
         return this
     }
 
-    fun setTopIndent(size: Size?): ParagraphStyle {
-        this.topIndent = size
+    fun setAlign(align: Align?): ParagraphStyle {
+        this.align = align
         return this
     }
 
-    fun setRightIndent(size: Size?): ParagraphStyle {
-        this.rightIndent = size
+    fun setSpaceBefore(size: Size?): ParagraphStyle {
+        this.spaceBefore = size
         return this
     }
 
-    fun setBottomIndent(size: Size?): ParagraphStyle {
-        this.bottomIndent = size
+    fun setSpaceAfter(size: Size?): ParagraphStyle {
+        this.spaceAfter = size
         return this
     }
 
@@ -89,8 +91,8 @@ class ParagraphStyle(
         return this
     }
 
-    fun setAlign(align: Align?): ParagraphStyle {
-        this.align = align
+    fun setRightIndent(size: Size?): ParagraphStyle {
+        this.rightIndent = size
         return this
     }
 
@@ -157,10 +159,10 @@ class ParagraphStyle(
     companion object {
         fun default() = ParagraphStyle(
                 align = Align.LEFT,
-                topIndent = Size.dp(0f),
-                rightIndent = Size.dp(0f),
-                bottomIndent = Size.dp(0f),
+                spaceBefore = Size.dp(0f),
+                spaceAfter = Size.dp(0f),
                 leftIndent = Size.dp(0f),
+                rightIndent = Size.dp(0f),
                 firstAlign = null,
                 firstLeftIndent = null,
                 firstRightIndent = null,
