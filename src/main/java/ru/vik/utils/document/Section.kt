@@ -7,6 +7,12 @@ open class Section : ParagraphItem {
     final override var paragraphStyle = ParagraphStyle()
     final override var characterStyle = CharacterStyle()
 
+    var setFirstBaselineToTop: Boolean = false
+
+    val cacheParagraphStyle = ParagraphStyle()
+    val cacheCharacterStyle = CharacterStyle()
+    val cacheLocalMetrics = Size.LocalMetrics()
+
     override val text: CharSequence get() {
         val out = StringBuilder()
         for (item in this._paragraphs) {

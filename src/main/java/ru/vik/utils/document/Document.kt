@@ -3,11 +3,6 @@ package ru.vik.utils.document
 import ru.vik.utils.parser.StringParser
 
 open class Document : Section() {
-    init {
-        this.paragraphStyle = ParagraphStyle.default()
-        this.characterStyle = CharacterStyle.default()
-    }
-
     open fun setText(text: String) {
         this.clear()
 

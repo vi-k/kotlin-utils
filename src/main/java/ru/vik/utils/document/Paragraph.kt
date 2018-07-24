@@ -10,6 +10,11 @@ class Paragraph(text: String? = null) : ParagraphItem {
     override val paragraphStyle = ParagraphStyle()
     override val characterStyle = CharacterStyle()
 
+    val cacheParagraphStyle = ParagraphStyle()
+    val cacheCharacterStyle = CharacterStyle()
+    val cacheLocalMetrics = Size.LocalMetrics()
+    val cacheSegmentLocalMetrics = Size.LocalMetrics()
+
     internal val textBuilder = if (text != null) StringBuilder(text) else StringBuilder()
     override val text: CharSequence get() = this.textBuilder
 

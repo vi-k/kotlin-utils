@@ -17,6 +17,6 @@ open class Border(
         fun pt(size: Float, color: Int) = Border(size, Units.PT, color)
         fun em(size: Float, color: Int) = Border(size, Units.EM, color)
         fun ratio(size: Float, color: Int) = Border(size, Units.RATIO, color)
-        fun eh(size: Float, color: Int) = Border(size, Units.EH, color)
+        fun fh(size: Float, color: Int) = Border(size, Units.FH, color)
     }
 }

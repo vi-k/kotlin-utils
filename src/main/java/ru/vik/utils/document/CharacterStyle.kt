@@ -5,26 +5,27 @@ import ru.vik.utils.color.Color
 class CharacterStyle(
     var font: String? = null,
     var size: Size = Size.em(1f),
-    var leading: AutoSize? = null,
+    var leading: Size? = null,
     var scaleX: Float = 1f,
     var bold: Boolean? = null,
     var italic: Boolean? = null,
     var underline: Boolean? = null,
     var strike: Boolean? = null,
     var color: Int? = null,
-    var baselineShift: Size = Size.dp(0f),
-    var verticalAlign: VAlign? = null,
-    var nullSizeEffect: Boolean? = null
+    var baselineShift: Size = Size.px(0f),
+    var verticalAlign: VAlign? = null
+//    var nullSizeEffect: Boolean? = null
 //    var letterSpacing: Float? = null,
 //    var allCaps: Caps? = null
 ) {
+    var baselineShiftAdd: Size = Size.px(0f)
 
     enum class Caps {
         NONE, ALL_CAPS, SMALL_CAPS
     }
 
     enum class VAlign {
-        BASELINE, TOP, BOTTOM
+        BASELINE, TOP, BOTTOM, BASELINE_TO_BOTTOM
     }
 
     constructor(characterStyle: CharacterStyle?) : this(
@@ -38,13 +39,26 @@ class CharacterStyle(
             strike = characterStyle?.strike,
             color = characterStyle?.color,
             baselineShift = characterStyle?.baselineShift ?: Size.dp(0f),
-            verticalAlign = characterStyle?.verticalAlign,
-            nullSizeEffect = characterStyle?.nullSizeEffect
-//            letterSpacing = characterStyle?.letterSpacing,
-//            allCaps = characterStyle?.allCaps
+            verticalAlign = characterStyle?.verticalAlign
+//            nullSizeEffect = characterStyle?.nullSizeEffect
     )
 
     fun clone() = CharacterStyle(this)
+
+    fun copy(characterStyle: CharacterStyle): CharacterStyle {
+        this.font = characterStyle.font
+        this.size = characterStyle.size
+        this.leading = characterStyle.leading
+        this.scaleX = characterStyle.scaleX
+        this.bold = characterStyle.bold
+        this.italic = characterStyle.italic
+        this.underline = characterStyle.underline
+        this.strike = characterStyle.strike
+        this.color = characterStyle.color
+        this.baselineShift = characterStyle.baselineShift
+        this.verticalAlign = characterStyle.verticalAlign
+        return this
+    }
 
     /**
      * Присоединение нового стиля.
@@ -57,46 +71,64 @@ class CharacterStyle(
      * невозможно будет вычислить.
      *
      * @param characterStyle Присоединяемый стиль.
-     * @param density Плотность, требуется для расчёта базовой линии.
+     * @param localMetrics Параметры, необходимые для рассчёта базовой линии и вертикального
+     * выравнивания.
      * @return Функция не возвращает новый объект, а модифицирует текущий, и возвращает
      * ссылку на него.
      */
-    fun attach(characterStyle: CharacterStyle, density: Float): CharacterStyle {
+    fun attach(characterStyle: CharacterStyle, deviceMetrics: Size.DeviceMetrics,
+        localMetrics: Size.LocalMetrics
+    ): CharacterStyle {
+
         characterStyle.font?.also { this.font = it }
 
-        // Расчитываем смещение базовой линии
+        // Если предыдущие значения размера шрифта и смещения базовой линии не были приведены
+        // к абсолютным величинам, сделать ничего с ними не можем, т.к. неизвестны параметры
+        // шрифта на предыдущем шаге.
+        assert(this.size.isAbsolute()) {
+            "CharacterStyle.attach(): `size` must be absolute"
+        }
+        assert(this.baselineShift.isAbsolute()) {
+            "CharacterStyle.attach(): `baselineShift` must be absolute"
+        }
 
-        // Смещение рассчитываем до того, как изменим шрифт! Т.е. размеры, указанные
-        // в em и ratio вычисляем относительно родительского стиля
-        val baselineShift = characterStyle.baselineShift.tryToAbsolute(this.size)
+        // Текущий размер шрифта и размер шрифта, переданный в localMetrics должны совпадать
+        assert(this.size.toPixels(deviceMetrics, localMetrics) == localMetrics.fontSize) {
+            "CharacterStyle.attach(): size != localMetrics.fontSize"
+        }
 
-        // Если предыдущее значение не приведено к абсолютным величинам, игнорируем его,
-        // т.к. вычислить его мы уже не сможем. Если размер шрифта не приведён к абсолютным
-        // значениям, то не можем вычислить и передаваеме в characterStyle значение смещения,
-        // тогда оставляем то, что есть, без изменений. Выбора у нас нет
+        // Рассчитываем смещение базовой линии
+        var baselineShift = this.baselineShift.toPixels(deviceMetrics, localMetrics,
+                useParentSize = false) + characterStyle.baselineShift.toPixels(deviceMetrics,
+                localMetrics, useParentSize = false)
 
-        if (this.baselineShift.isRelative()) {
-            this.baselineShift = baselineShift
-        } else if (baselineShift.isAbsolute()) {
-            if (baselineShift.units == Size.Units.PX || this.baselineShift.units == Size.Units.PX) {
-                // Если хоть одно значение - предыдущее или заданное - указано в PX,
-                // приводим оба к PX. Для этого и нужна плотность (density).
-                val newSize = if (this.baselineShift.units == Size.Units.DP) {
-                    this.baselineShift.size * density
-                } else {
-                    this.baselineShift.size
-                } + if (baselineShift.units == Size.Units.DP) baselineShift.size * density else baselineShift.size
+        // На смещение влиет и вертикальное выравнивание
+        this.baselineShiftAdd = Size.px(0f)
+        when {
+            characterStyle.verticalAlign == VAlign.TOP -> {
+                baselineShift -= localMetrics.fontAscent
+                this.baselineShiftAdd = Size.fa(1f)
+            }
+            characterStyle.verticalAlign == VAlign.BOTTOM -> {
+                baselineShift += localMetrics.fontDescent
+                this.baselineShiftAdd = Size.fd(-1f)
+            }
+            characterStyle.verticalAlign == VAlign.BASELINE_TO_BOTTOM -> baselineShift += localMetrics.fontDescent
+        }
 
-                this.baselineShift = Size.px(newSize)
+        this.baselineShift = Size.px(baselineShift)
+
+        // Рассчитываем leading, если он указан в RATIO
+        characterStyle.leading?.also {
+            this.leading = if (it.units != Size.Units.RATIO) {
+                it
             } else {
-                // Если оба значения в DP, оставляем в DP
-                this.baselineShift = Size.dp(this.baselineShift.size + baselineShift.size)
+                Size.px((localMetrics.fontAscent + localMetrics.fontDescent) * it.size)
             }
         }
 
-        this.size = characterStyle.size.tryToAbsolute(this.size)
+        this.size = Size.px(characterStyle.size.toPixels(deviceMetrics, localMetrics))
 
-        characterStyle.leading?.also { this.leading = it }
         this.scaleX *= characterStyle.scaleX
         characterStyle.bold?.also { this.bold = it }
         characterStyle.italic?.also { this.italic = it }
@@ -104,9 +136,6 @@ class CharacterStyle(
         characterStyle.strike?.also { this.strike = it }
         characterStyle.color?.also { this.color = it }
         characterStyle.verticalAlign?.also { this.verticalAlign = it }
-        characterStyle.nullSizeEffect?.also { this.nullSizeEffect = it }
-//        characterStyle.letterSpacing?.also { this.letterSpacing = it }
-//        characterStyle.allCaps?.also { this.allCaps = it }
         return this
     }
 
@@ -120,7 +149,7 @@ class CharacterStyle(
         return this
     }
 
-    fun setLeading(leading: AutoSize?): CharacterStyle {
+    fun setLeading(leading: Size?): CharacterStyle {
         this.leading = leading
         return this
     }
@@ -165,26 +194,11 @@ class CharacterStyle(
         return this
     }
 
-    fun setNullSizeEffect(nullSizeEffect: Boolean?): CharacterStyle {
-        this.nullSizeEffect = nullSizeEffect
-        return this
-    }
-
-//    fun setLetterSpacing(letterSpacing: Float): CharacterStyle {
-//        this.letterSpacing = letterSpacing
-//        return this
-//    }
-
-//    fun setAllCaps(allCaps: Caps): CharacterStyle {
-//        this.allCaps = allCaps
-//        return this
-//    }
-
     companion object {
         fun default() = CharacterStyle(
                 font = null,
                 size = Size.dp(16f),
-                leading = AutoSize(),
+                leading = Size.auto(),
                 scaleX = 1f,
                 bold = false,
                 italic = false,
@@ -192,10 +206,7 @@ class CharacterStyle(
                 strike = false,
                 color = Color.BLACK,
                 baselineShift = Size.dp(0f),
-                verticalAlign = VAlign.BASELINE,
-                nullSizeEffect = false
-//                letterSpacing = 0f,
-//                allCaps = Caps.NONE
+                verticalAlign = VAlign.BASELINE
         )
     }
 }
