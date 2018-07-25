@@ -197,7 +197,7 @@ class CharacterStyle(
     companion object {
         fun default() = CharacterStyle(
                 font = null,
-                size = Size.dp(16f),
+                size = Size.sp(16f),
                 leading = Size.auto(),
                 scaleX = 1f,
                 bold = false,
