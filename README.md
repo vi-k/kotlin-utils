@@ -1,3 +1,3 @@
 # kotlin-utils
 
-См. [wiki].
+См. [wiki](wiki).
