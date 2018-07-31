@@ -5,7 +5,7 @@ fun StringParser.parseWord(numberOfWord: Int): Boolean {
 
     var number = 0
 
-    while (true) {
+    while (!eof()) {
         // Пропускам не-буквы
         while (!eof()) {
             val char = get()
