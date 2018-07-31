@@ -4,12 +4,18 @@ interface ParagraphItem {
     val borderStyle: BorderStyle
     val paragraphStyle: ParagraphStyle
     val characterStyle: CharacterStyle
-    var text: CharSequence
+    var text: String
     val span get() = addSpan()
 
     class Word(val number: Int)
+    class NextString(val string: String, var number: Int = 1)
+    class LastString(val string: String)
+    class NextRegex(val regex: Regex, var number: Int = 1)
 
     fun word(number: Int) = Word(number)
+    fun next(string: String, number: Int = 1) = NextString(string, number)
+    fun last(string: String) = LastString(string)
+    fun next(regex: Regex, number: Int = 1) = NextRegex(regex, number)
 
     /* Установка участка по символам */
     infix fun Span.on(start: Int): Span {
@@ -45,49 +51,81 @@ interface ParagraphItem {
 
     /* Установка участка по словам */
     infix fun Span.on(word: Word): Span {
-        val (start, end) = findWord(word.number, 0)
+        val (start, end) = findWord(word.number)
         this.start = start
         this.end = end
         return this
     }
 
     infix fun Span.from(word: Word): Span {
-        val (start, _) = findWord(word.number, 0)
-        this.start = start
+        this.start = findWord(word.number).first
         return this
     }
 
     infix fun Span.to(word: Word): Span {
-        val (_, end) = findWord(word.number, 0)
-        this.end = end
+        this.end = findWord(word.number).second
         return this
     }
 
     infix fun Span.count(word: Word): Span {
-        val (_, end) = findWord(word.number, this.start)
-        this.end = end
+        this.end = findWord(word.number, this.start).second
         return this
     }
 
+
     /* Установка участка по словам */
     infix fun Span.on(string: String): Span {
-        val (start, end) = findString(string, 0)
+        val (start, end) = findString(string)
         this.start = start
         this.end = end
         return this
     }
 
     infix fun Span.from(string: String): Span {
-        val (start, _) = findString(string, 0)
-        this.start = start
+        this.start = findString(string).first
+        return this
+    }
+
+    infix fun Span.from(next: NextString): Span {
+        var res = findString(next.string)
+        if (res.first != 0) this.start = res.first
+        else this.start = findString(next.string, res.second).first
+
+        for (i in 2..next.number) {
+            res = findString(next.string, res.second)
+            this.start = res.first
+        }
+
+        return this
+    }
+
+    infix fun Span.from(last: LastString): Span {
+        this.start = findLastString(last.string).first
         return this
     }
 
     infix fun Span.to(string: String): Span {
-        val (_, end) = findString(string, 0)
-        this.end = end
+        this.end = findString(string, this.start).second
         return this
     }
+
+    infix fun Span.to(next: NextString): Span {
+        val (start, end) = findString(next.string, this.start)
+        if (start != this.start) this.end = end
+        else this.end = findString(next.string, end).second
+
+        for (i in 2..next.number) {
+            this.end = findString(next.string, this.end).second
+        }
+
+        return this
+    }
+
+    infix fun Span.to(last: LastString): Span {
+        this.end = findLastString(last.string).second
+        return this
+    }
+
 
     /* Установка участка по регулярным выражениям */
     infix fun Span.on(regex: Regex): Span {
@@ -98,14 +136,37 @@ interface ParagraphItem {
     }
 
     infix fun Span.from(regex: Regex): Span {
-        val (start, _) = find(regex, 0)
-        this.start = start
+        this.start = find(regex).first
+        return this
+    }
+
+    infix fun Span.from(next: NextRegex): Span {
+        var res = find(next.regex)
+        if (start != 0) this.start = res.first
+        else this.start = find(next.regex, res.second).first
+
+        for (i in 2..next.number) {
+            res = find(next.regex, res.second)
+            this.start = res.first
+        }
+
         return this
     }
 
     infix fun Span.to(regex: Regex): Span {
-        val (_, end) = find(regex, 0)
-        this.end = end
+        this.end = find(regex, this.start).second
+        return this
+    }
+
+    infix fun Span.to(next: NextRegex): Span {
+        val (start, end) = find(next.regex, this.start)
+        if (start != this.start) this.end = end
+        else this.end = find(next.regex, end).second
+
+        for (i in 2..next.number) {
+            this.end = find(next.regex, this.end).second
+        }
+
         return this
     }
 
@@ -162,5 +223,6 @@ interface ParagraphItem {
 
     fun findWord(number: Int, start: Int = 0): Pair<Int, Int>
     fun findString(string: String, start: Int = 0): Pair<Int, Int>
+    fun findLastString(string: String): Pair<Int, Int>
     fun find(regex: Regex, start: Int = 0): Pair<Int, Int>
 }

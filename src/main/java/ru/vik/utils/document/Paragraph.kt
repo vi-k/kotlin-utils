@@ -16,8 +16,8 @@ class Paragraph(text: String? = null) : ParagraphItem {
     val cacheSegmentLocalMetrics = Size.LocalMetrics()
 
     internal val textBuilder = if (text != null) StringBuilder(text) else StringBuilder()
-    override var text: CharSequence
-        get() = this.textBuilder
+    override var text: String
+        get() = this.textBuilder.toString()
         set(value) {
             this.spans.clear()
             this.textBuilder.setLength(0)
@@ -103,6 +103,15 @@ class Paragraph(text: String? = null) : ParagraphItem {
 
     override fun findString(string: String, start: Int): Pair<Int, Int> {
         val pos = this.textBuilder.indexOf(string, start)
+        return if (pos >= 0) {
+            Pair(pos, pos + string.length)
+        } else {
+            Pair(this.textBuilder.length, this.textBuilder.length)
+        }
+    }
+
+    override fun findLastString(string: String): Pair<Int, Int> {
+        val pos = this.textBuilder.lastIndexOf(string)
         return if (pos >= 0) {
             Pair(pos, pos + string.length)
         } else {

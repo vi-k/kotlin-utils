@@ -29,7 +29,7 @@ open class BaseHtmlDocument(
         val openedSpans: MutableList<Span> = mutableListOf()
     )
 
-    override var text: CharSequence
+    override var text: String
         get() = super.text
         set(value) {
             this.html.parse(value)

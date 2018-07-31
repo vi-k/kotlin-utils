@@ -18,14 +18,14 @@ open class Section : ParagraphItem {
     private val _items = mutableListOf<ParagraphItem>()
     val items: List<ParagraphItem> get() = this._items
 
-    override var text: CharSequence
+    override var text: String
         get() {
             val out = StringBuilder()
             for (item in this._items) {
                 if (out.isNotEmpty()) out.append('\n')
                 out.append(item.text)
             }
-            return out
+            return out.toString()
         }
         set(value) {
             clear()
@@ -51,6 +51,8 @@ open class Section : ParagraphItem {
                 }
             }
         }
+
+    operator fun get(index: Int) = this._items[index]
 
     fun item(index: Int, init: (ParagraphItem.() -> Unit)? = null): ParagraphItem {
         val item = this._items[index]
@@ -136,5 +138,6 @@ open class Section : ParagraphItem {
 
     override fun findWord(number: Int, start: Int) = this._items[0].findWord(number, start)
     override fun findString(string: String, start: Int) = this._items[0].findString(string, start)
+    override fun findLastString(string: String) = this._items[0].findLastString(string)
     override fun find(regex: Regex, start: Int) = this._items[0].find(regex, start)
 }
