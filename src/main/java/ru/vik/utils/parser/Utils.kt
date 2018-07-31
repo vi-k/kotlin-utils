@@ -9,7 +9,7 @@ fun StringParser.parseWord(numberOfWord: Int): Boolean {
         // Пропускам не-буквы
         while (!eof()) {
             val char = get()
-            if (Character.isLetter(char) || char == '_') break
+            if (Character.isLetterOrDigit(char) || char == '_') break
             next()
         }
 
@@ -23,9 +23,9 @@ fun StringParser.parseWord(numberOfWord: Int): Boolean {
             next()
         }
 
-        // Проверяем, слово ли это
+        // Проверяем, слово ли это (есть ли хоть одна буква или цифра)
         for (i in this.start until this.pos) {
-            if (Character.isLetter(get(i))) {
+            if (Character.isLetterOrDigit(get(i))) {
                 number++
                 break
             }
