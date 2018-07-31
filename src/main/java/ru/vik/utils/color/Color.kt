@@ -92,22 +92,24 @@ fun Int.layer2(color: Int): Int {
 /**
  * Разбавление цвета прозрачным цветом. Изменения происходят только в канале a.
  *
- * @param weight Вес цвета в пределах 0..1 (0 - цвет становится полностью
+ * @param weight1 Вес цвета в пределах 0..1 (0 - цвет становится полностью
  * прозрачным, 1 - цвет не меняется).
  * @return "Разбавленный" цвет.
  */
-fun Int.mix(weight: Float) = this.setA((this.a * weight).posRoundToInt())
+fun Int.mix(weight1: Float) = this.setA((this.a * weight1).posRoundToInt())
 
-fun Int.mix(weight: Double) = this.setA((this.a * weight).posRoundToInt())
+fun Int.mix(weight1: Double) = this.setA((this.a * weight1).posRoundToInt())
 
 /**
  * Разбавление цвета другим цветом.
  *
- * @param weight Вес основного цвета в пределах 0..1. Второй цвет занимает всю оставшуюся часть.
- * @param color Второй цвет.
+ * @param weight1 Вес основного цвета в пределах 0..1. Второй цвет занимает всю оставшуюся часть.
+ * @param color2 Второй цвет.
  * @return Новый цвет - результат смешивания.
  */
-fun Int.mix(weight: Double, color: Int) = this.mix(weight, color, 1.0 - weight)
+fun Int.mix(weight1: Float, color2: Int) = this.mix(weight1, color2, 1f - weight1)
+
+fun Int.mix(weight1: Double, color2: Int) = this.mix(weight1, color2, 1.0 - weight1)
 
 /**
  * Смешивание цветов.
@@ -124,6 +126,9 @@ fun Int.mix(weight: Double, color: Int) = this.mix(weight, color, 1.0 - weight)
  *
  * @return Новый цвет - результат смешивания.
  */
+fun Int.mix(weight1: Float, color2: Int, weight2: Float): Int =
+        this.mix(weight1.toDouble(), color2, weight2.toDouble())
+
 fun Int.mix(weight1: Double, color2: Int, weight2: Double): Int {
     val aw1 = this.a * weight1
     val aw2 = color2.a * weight2
