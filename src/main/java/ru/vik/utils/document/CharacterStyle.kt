@@ -14,7 +14,6 @@ class CharacterStyle(
     var color: Int? = null,
     var baselineShift: Size = Size.px(0f),
     var verticalAlign: VAlign? = null
-//    var nullSizeEffect: Boolean? = null
 //    var letterSpacing: Float? = null,
 //    var allCaps: Caps? = null
 ) {
@@ -40,8 +39,12 @@ class CharacterStyle(
             color = characterStyle?.color,
             baselineShift = characterStyle?.baselineShift ?: Size.dp(0f),
             verticalAlign = characterStyle?.verticalAlign
-//            nullSizeEffect = characterStyle?.nullSizeEffect
     )
+
+    operator fun invoke(init: CharacterStyle.() -> Unit): CharacterStyle {
+        this.init()
+        return this
+    }
 
     fun clone() = CharacterStyle(this)
 

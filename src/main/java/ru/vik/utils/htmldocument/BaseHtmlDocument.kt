@@ -29,14 +29,16 @@ open class BaseHtmlDocument(
         val openedSpans: MutableList<Span> = mutableListOf()
     )
 
-    override fun setText(text: String) {
-        this.html.parse(text)
+    override var text: CharSequence
+        get() = super.text
+        set(value) {
+            this.html.parse(value)
 
-        this.clear()
-        val state = State(this)
+            this.clear()
+            val state = State(this)
 
-        tagToText(this.html.root!!, state, true)
-    }
+            tagToText(this.html.root!!, state, true)
+        }
 
     fun getTagConfig(name: String): TagConfig? {
         return this.html.getBaseTagConfig(name) as? TagConfig

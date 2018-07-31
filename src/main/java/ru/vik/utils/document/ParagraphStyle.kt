@@ -38,6 +38,11 @@ class ParagraphStyle(
             firstRightIndent = paragraphStyle.firstRightIndent,
             lastAlign = paragraphStyle.lastAlign)
 
+    operator fun invoke(init: ParagraphStyle.() -> Unit): ParagraphStyle {
+        this.init()
+        return this
+    }
+
     fun clone() = ParagraphStyle(this)
 
     fun copy(paragraphStyle: ParagraphStyle): ParagraphStyle {

@@ -16,110 +16,105 @@ class Paragraph(text: String? = null) : ParagraphItem {
     val cacheSegmentLocalMetrics = Size.LocalMetrics()
 
     internal val textBuilder = if (text != null) StringBuilder(text) else StringBuilder()
-    override val text: CharSequence get() = this.textBuilder
+    override var text: CharSequence
+        get() = this.textBuilder
+        set(value) {
+            this.spans.clear()
+            this.textBuilder.setLength(0)
+            this.textBuilder.append(value)
+        }
 
     val spans = mutableListOf<Span>()
-
-//    fun setText(textBuilder: String) {
-//        this.textBuilder.setLength(0)
-//        this.textBuilder.append(textBuilder)
-//        this.spans.clear()
-//    }
 
     /**
      * Добавление участка форматирования
      *
-     * Если span.start положительное число, то span.end тоже должен быть положительным, большим,
-     * чем span.start. Если же span.end отрицательное, то участок распространяется
-     * до конца строки. Если span.start отрицательное число, то начало участка отсчитывается
-     * с конца абзаца, в этом случае span.end тоже должен быть отрицательным числом. Если же
-     * span.end положительное или равно 0, то участок распространяется до конца строки
+//     * Если span.start положительное число, то span.end тоже должен быть положительным, большим,
+//     * чем span.start. Если же span.end отрицательное, то участок распространяется
+//     * до конца строки. Если span.start отрицательное число, то начало участка отсчитывается
+//     * с конца абзаца, в этом случае span.end тоже должен быть отрицательным числом. Если же
+//     * span.end положительное или равно 0, то участок распространяется до конца строки
      */
-    override fun addSpan(span: Span): Paragraph {
-        val length = this.textBuilder.length
-
-        if (span.start >= 0 && span.end < 0 || span.start < 0 && span.end >= 0) {
-            span.end = length
-        }
-
-        if (span.start < 0) {
-            span.start = length + span.start
-            if (span.end < 0) {
-                span.end = length + span.end
-            }
-        }
-
+    override fun addSpan(span: Span): Span {
         this.spans.add(span)
-        return this
+        return span
     }
 
     override fun addSpan(start: Int, end: Int, characterStyle: CharacterStyle,
         borderStyle: BorderStyle?
-    ): Paragraph {
-        addSpan(Span(start, end, characterStyle, borderStyle))
-        return this
+    ): Span {
+        var correctedEnd = end
+        if (end < start) correctedEnd = this.textBuilder.length
+
+        return addSpan(Span(start, correctedEnd, characterStyle, borderStyle))
     }
 
-    @Suppress("NAME_SHADOWING")
     override fun addSpan(regex: Regex, count: Int, characterStyle: CharacterStyle,
         borderStyle: BorderStyle?
-    ): Paragraph {
+    ): SpanList {
+        @Suppress("NAME_SHADOWING")
         var count = count
+
+        val spans = mutableListOf<Span>()
 
         var result = regex.find(this.textBuilder)
         while (result != null && count != 0) {
-            val span = Span(result.range.start, result.range.start + result.value.length,
-                    characterStyle, borderStyle)
-            addSpan(span)
+            spans.add(addSpan(result.range.start, result.range.start + result.value.length,
+                    characterStyle, borderStyle))
 
             result = result.next()
             count--
         }
 
-        return this
+        return spans
     }
 
-    override fun addSpan(regex: Regex, characterStyle: CharacterStyle,
+    override fun addWordSpan(first: Int, last: Int, characterStyle: CharacterStyle,
         borderStyle: BorderStyle?
-    ): Paragraph {
-        return addSpan(regex, -1, characterStyle, borderStyle)
-    }
+    ): Span {
+        val parser = StringParser(this.textBuilder)
+        var start = parser.end
+        var end = parser.end
 
-    override fun addWordSpan(numberOfWord: Int, characterStyle: CharacterStyle,
-        borderStyle: BorderStyle?
-    ): Paragraph {
-        return addWordSpan(numberOfWord, 1, characterStyle, borderStyle)
-    }
+        if (parser.parseWord(first)) {
+            start = parser.start
+            end = parser.pos
 
-    override fun addWordSpan(numberOfWord: Int, count: Int, characterStyle: CharacterStyle,
-        borderStyle: BorderStyle?
-    ): Paragraph {
-        if (count != 0) {
-            val parser = StringParser(this.textBuilder)
-            if (parser.parseWord(numberOfWord)) {
-                val start = parser.start
-                var end = parser.pos
-
-                if (count > 1) {
-                    parser.parseWord(count - 1)
-                    end = parser.pos
-                } else if (count < 0) {
-                    end = parser.end
-                }
-
-                addSpan(Span(start, end, characterStyle, borderStyle))
+            if (last > first) {
+                parser.parseWord(last - first)
+                end = parser.pos
+            } else if (last < first) {
+                end = parser.end
             }
         }
 
-        return this
+        return addSpan(start, end, characterStyle, borderStyle)
     }
 
-    override fun findWord(numberOfWord: Int): Int {
-        val parser = StringParser(this.textBuilder)
-        if (parser.parseWord(numberOfWord)) {
-            return parser.start
+    override fun removeSpan(span: Span) {
+        this.spans.remove(span)
+    }
+
+    override fun findWord(number: Int, start: Int): Pair<Int, Int> {
+        val parser = StringParser(this.textBuilder, start)
+        parser.parseWord(number)
+        return Pair(parser.start, parser.pos)
+    }
+
+    override fun findString(string: String, start: Int): Pair<Int, Int> {
+        val pos = this.textBuilder.indexOf(string, start)
+        return if (pos >= 0) {
+            Pair(pos, pos + string.length)
+        } else {
+            Pair(this.textBuilder.length, this.textBuilder.length)
+        }
+    }
+
+    override fun find(regex: Regex, start: Int): Pair<Int, Int> {
+        regex.find(this.textBuilder, start)?.also {
+            return Pair(it.range.start, it.range.start + it.value.length)
         }
 
-        return -1
+        return Pair(this.textBuilder.length, this.textBuilder.length)
     }
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 27
@@ -32,4 +33,17 @@ dependencies {
 }
 repositories {
     mavenCentral()
+}
+
+dokka {
+    linkMapping {
+        dir = "src/main/java"
+        url = "https://github.com/vi-k/kotlin-utils/src/main/java"
+        suffix = "#L"
+    }
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/dokkaJavadoc"
 }

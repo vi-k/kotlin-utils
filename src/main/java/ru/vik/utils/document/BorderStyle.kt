@@ -30,6 +30,89 @@ open class BorderStyle(
             paddingLeft = borderStyle?.paddingLeft,
             backgroundColor = borderStyle?.backgroundColor ?: 0)
 
+    var margin: Size?
+        get() = marginTop.takeIf {
+            marginTop == marginRight && marginTop == marginBottom &&
+                    marginTop == marginLeft
+        }
+        set(size: Size?) {
+            this.marginTop = size
+            this.marginRight = size
+            this.marginBottom = size
+            this.marginLeft = size
+        }
+
+    var verticalMargin: Size?
+        get() = marginTop.takeIf { marginTop == marginBottom }
+        set(size: Size?) {
+            this.marginTop = size
+            this.marginBottom = size
+        }
+
+    var horizontalMargin: Size?
+        get() = marginLeft.takeIf { marginLeft == marginRight }
+        set(size: Size?) {
+            this.marginLeft = size
+            this.marginRight = size
+        }
+
+    var border: Border?
+        get() = borderTop.takeIf {
+            borderTop == borderRight && borderTop == borderBottom &&
+                    borderTop == borderLeft
+        }
+        set(border: Border?) {
+            this.borderTop = border
+            this.borderRight = border
+            this.borderBottom = border
+            this.borderLeft = border
+        }
+
+    var verticalBorder: Border?
+        get() = borderTop.takeIf { borderTop == borderBottom }
+        set(size: Border?) {
+            this.borderTop = size
+            this.borderBottom = size
+        }
+
+    var horizontalBorder: Border?
+        get() = borderLeft.takeIf { borderLeft == borderRight }
+        set(size: Border?) {
+            this.borderLeft = size
+            this.borderRight = size
+        }
+
+    var padding: Size?
+        get() = paddingTop.takeIf {
+            paddingTop == paddingRight && paddingTop == paddingBottom &&
+                    paddingTop == paddingLeft
+        }
+        set(size: Size?) {
+            this.paddingTop = size
+            this.paddingRight = size
+            this.paddingBottom = size
+            this.paddingLeft = size
+        }
+
+    var verticalPadding: Size?
+        get() = paddingTop.takeIf { paddingTop == paddingBottom }
+        set(size: Size?) {
+            this.paddingTop = size
+            this.paddingBottom = size
+        }
+
+    var horizontalPadding: Size?
+        get() = paddingLeft.takeIf { paddingLeft == paddingRight }
+        set(size: Size?) {
+            this.paddingLeft = size
+            this.paddingRight = size
+        }
+
+    operator fun invoke(init: BorderStyle.() -> Unit): BorderStyle {
+        this.init()
+        return this
+    }
+
     open fun clone() = BorderStyle(this)
 
     fun attach(borderStyle: BorderStyle): BorderStyle {
