@@ -44,8 +44,19 @@ interface ParagraphItem {
         return this
     }
 
+    infix fun Span.style(init: CharacterStyle.() -> Unit): Span {
+        this.characterStyle.init()
+        return this
+    }
+
     infix fun Span.border(borderStyle: BorderStyle): Span {
         this.borderStyle = borderStyle
+        return this
+    }
+
+    infix fun Span.border(init: BorderStyle.() -> Unit): Span {
+        if (this.borderStyle == null) this.borderStyle = BorderStyle()
+        this.borderStyle!!.init()
         return this
     }
 
@@ -190,9 +201,24 @@ interface ParagraphItem {
         return this
     }
 
+    infix fun SpanList.style(init: CharacterStyle.() -> Unit): SpanList {
+        for (span in this) {
+            span.characterStyle.init()
+        }
+        return this
+    }
+
     infix fun SpanList.border(borderStyle: BorderStyle?): SpanList {
         for (span in this) {
             span.borderStyle = borderStyle
+        }
+        return this
+    }
+
+    infix fun SpanList.border(init: BorderStyle.() -> Unit): SpanList {
+        for (span in this) {
+            if (span.borderStyle == null) span.borderStyle = BorderStyle()
+            span.borderStyle!!.init()
         }
         return this
     }

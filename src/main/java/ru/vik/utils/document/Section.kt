@@ -100,14 +100,6 @@ open class Section : ParagraphItem {
         this._items.add(paragraph)
     }
 
-//    fun getParagraph(index: Int): Paragraph? {
-//        return _items[index] as? Paragraph
-//    }
-
-//    fun getSection(index: Int): Section? {
-//        return _items[index] as? Section
-//    }
-
     fun clear() {
         this._items.clear()
     }
