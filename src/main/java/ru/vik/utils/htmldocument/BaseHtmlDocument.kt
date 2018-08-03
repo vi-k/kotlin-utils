@@ -8,20 +8,29 @@ import ru.vik.utils.html.Tag
 import ru.vik.utils.math.simpleRoundToInt
 import ru.vik.utils.parser.StringParser
 
-typealias SetBorderStyleHandler = (Tag, BorderStyle) -> Unit
-typealias SetParagraphStyleHandler = (Tag, ParagraphStyle) -> Unit
-typealias SetCharacterStyleHandler = (Tag, CharacterStyle) -> Unit
-
 open class BaseHtmlDocument(
     private val html: BaseHtml = BaseHtml()
 ) : Document() {
 
     class TagConfig(
         type: Tag.Type,
-        var onSetBorderStyle: SetBorderStyleHandler? = null,
-        var onSetParagraphStyle: SetParagraphStyleHandler? = null,
-        var onSetCharacterStyle: SetCharacterStyleHandler? = null
-    ) : BaseHtml.BaseTagConfig(type)
+        var onSetBorderStyle: (BorderStyle.(Tag) -> Unit)? = null,
+        var onSetParagraphStyle: (ParagraphStyle.(Tag) -> Unit)? = null,
+        var onSetCharacterStyle: (CharacterStyle.(Tag) -> Unit)? = null
+    ) : BaseHtml.BaseTagConfig(type) {
+
+        fun borderStyle(init: BorderStyle.(Tag) -> Unit) {
+            onSetBorderStyle = init
+        }
+
+        fun paragraphStyle(init: ParagraphStyle.(Tag) -> Unit) {
+            onSetParagraphStyle = init
+        }
+
+        fun characterStyle(init: CharacterStyle.(Tag) -> Unit) {
+            onSetCharacterStyle = init
+        }
+    }
 
     private class State(
         var section: Section,
@@ -39,6 +48,19 @@ open class BaseHtmlDocument(
 
             tagToText(this.html.root!!, state, true)
         }
+
+    fun tag(name: String, init: (TagConfig.() -> Unit)?): TagConfig {
+        var tagConfig = getTagConfig(name)
+
+        if (tagConfig == null) {
+            tagConfig = TagConfig(Tag.Type.UNKNOWN)
+            this.html.config[name] = tagConfig
+        }
+
+        init?.invoke(tagConfig)
+
+        return tagConfig
+    }
 
     fun getTagConfig(name: String): TagConfig? {
         return this.html.getBaseTagConfig(name) as? TagConfig
@@ -59,9 +81,9 @@ open class BaseHtmlDocument(
 
                 val section = if (isRoot) state.section else Section()
                 config?.also {
-                    it.onSetBorderStyle?.invoke(tag, section.borderStyle)
-                    it.onSetParagraphStyle?.invoke(tag, section.paragraphStyle)
-                    it.onSetCharacterStyle?.invoke(tag, section.characterStyle)
+                    it.onSetBorderStyle?.invoke(section.borderStyle, tag)
+                    it.onSetParagraphStyle?.invoke(section.paragraphStyle, tag)
+                    it.onSetCharacterStyle?.invoke(section.characterStyle, tag)
                 }
 
                 var parent: Section? = null
@@ -96,9 +118,9 @@ open class BaseHtmlDocument(
                 val paragraph = appendParagraph(state, tag.text)
 
                 config?.also {
-                    it.onSetBorderStyle?.invoke(tag, paragraph.borderStyle)
-                    it.onSetParagraphStyle?.invoke(tag, paragraph.paragraphStyle)
-                    it.onSetCharacterStyle?.invoke(tag, paragraph.characterStyle)
+                    it.onSetBorderStyle?.invoke(paragraph.borderStyle, tag)
+                    it.onSetParagraphStyle?.invoke(paragraph.paragraphStyle, tag)
+                    it.onSetCharacterStyle?.invoke(paragraph.characterStyle, tag)
                 }
 
                 for (child in tag.children) {
@@ -120,8 +142,8 @@ open class BaseHtmlDocument(
                 if (tag.name.isNotEmpty()) {
                     span = Span(0, -1, CharacterStyle(), BorderStyle())
                     config?.also {
-                        it.onSetBorderStyle?.invoke(tag, span.borderStyle!!)
-                        it.onSetCharacterStyle?.invoke(tag, span.characterStyle)
+                        it.onSetBorderStyle?.invoke(span.borderStyle!!, tag)
+                        it.onSetCharacterStyle?.invoke(span.characterStyle, tag)
                     }
                 }
 
@@ -220,8 +242,8 @@ private val reSize: Regex by lazy {
  * @return Числовое значение указанного цвета либо null, если преобразование не удалось.
  */
 fun String.toHtmlColor(): Int? {
-    reColorNum.find(this)?.also {
-        val num = it.groupValues[1]
+    reColorNum.find(this)?.apply {
+        val num = groupValues[1]
         if (num.length == 6) {
             num.toIntOrNull(16)?.also { return it.setA(255) }
         } else if (num.length == 3) {
@@ -239,23 +261,23 @@ fun String.toHtmlColor(): Int? {
         return null
     }
 
-    reColorFun.find(this)?.also { res ->
-        res.groupValues[2].toIntOrNull()?.also { mr ->
-            res.groupValues[3].toIntOrNull()?.also { mg ->
-                res.groupValues[4].toIntOrNull()?.also { mb ->
+    reColorFun.find(this)?.apply {
+        groupValues[2].toIntOrNull()?.also { mr ->
+            groupValues[3].toIntOrNull()?.also { mg ->
+                groupValues[4].toIntOrNull()?.also { mb ->
                     val r = Math.min(Math.max(mr, 0), 255)
                     val g = Math.min(Math.max(mg, 0), 255)
                     val b = Math.min(Math.max(mb, 0), 255)
                     var a = 255
 
-                    if (res.groupValues[5].isEmpty()) {
+                    if (groupValues[5].isEmpty()) {
                         // Если не задан параметр a
-                        if (res.groupValues[1] == "rgba") return null
+                        if (groupValues[1] == "rgba") return null
                     } else {
                         // Если задан параметр a
-                        if (res.groupValues[1] != "rgba") return null
+                        if (groupValues[1] != "rgba") return null
 
-                        res.groupValues[6].toFloatOrNull()?.also { ma ->
+                        groupValues[6].toFloatOrNull()?.also { ma ->
                             a = Math.min(Math.max((ma * 255f).simpleRoundToInt(), 0), 255)
                         }
                     }
@@ -279,9 +301,9 @@ fun String.toHtmlColor(): Int? {
  * не поддерживает напрямую проценты, они переводятся в доли (ratio).
  */
 fun String.toHtmlSize(allowPercent: Boolean = true): Size? {
-    reSize.find(this)?.also {
-        it.groupValues[1].toFloatOrNull()?.also { num ->
-            return when (it.groupValues[3].toLowerCase()) {
+    reSize.find(this)?.apply {
+        groupValues[1].toFloatOrNull()?.also { num ->
+            return when (groupValues[3].toLowerCase()) {
                 "%" -> if (allowPercent) Size.ratio(num / 100f) else null
                 "em" -> Size.em(num)
                 else -> Size.dp(num)

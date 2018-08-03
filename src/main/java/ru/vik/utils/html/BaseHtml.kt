@@ -14,7 +14,7 @@ open class BaseHtml {
         }
     }
 
-    open class BaseTagConfig(val type: Tag.Type)
+    open class BaseTagConfig(var type: Tag.Type)
 
     open fun setTagProperties(tag: Tag) {
         if (!tag.type.isCorrect()) {
