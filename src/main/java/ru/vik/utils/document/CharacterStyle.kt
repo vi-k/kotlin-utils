@@ -48,7 +48,7 @@ class CharacterStyle(
 
     fun clone() = CharacterStyle(this)
 
-    fun copy(characterStyle: CharacterStyle): CharacterStyle {
+    fun copyFrom(characterStyle: CharacterStyle): CharacterStyle {
         this.font = characterStyle.font
         this.size = characterStyle.size
         this.leading = characterStyle.leading

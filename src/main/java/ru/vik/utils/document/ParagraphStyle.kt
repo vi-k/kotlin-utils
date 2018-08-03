@@ -45,7 +45,7 @@ class ParagraphStyle(
 
     fun clone() = ParagraphStyle(this)
 
-    fun copy(paragraphStyle: ParagraphStyle): ParagraphStyle {
+    fun copyFrom(paragraphStyle: ParagraphStyle): ParagraphStyle {
         this.align = paragraphStyle.align
         this.spaceBefore = paragraphStyle.spaceBefore
         this.spaceAfter = paragraphStyle.spaceAfter

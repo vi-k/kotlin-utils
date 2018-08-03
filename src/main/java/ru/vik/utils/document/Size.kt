@@ -1,5 +1,7 @@
 package ru.vik.utils.document
 
+import kotlin.math.round
+
 /**
  * Единицы измерения:
  * Абсолютные единицы измерения (зависящие только от параметров устройства):
@@ -36,7 +38,7 @@ open class Size(val size: Float, val units: Units) {
         var fontDescent: Float = 0f,
         var parentSize: Float? = null
     ) {
-        fun copy(localMetrics: LocalMetrics): LocalMetrics {
+        fun copyFrom(localMetrics: LocalMetrics): LocalMetrics {
             this.fontSize = localMetrics.fontSize
             this.fontAscent = localMetrics.fontAscent
             this.fontDescent = localMetrics.fontDescent
@@ -120,7 +122,7 @@ open class Size(val size: Float, val units: Units) {
     fun toPixels(deviceMetrics: DeviceMetrics, fontSize: Float, fontAscent: Float,
         fontDescent: Float,
         parentSize: Float? = null, horizontal: Boolean = false
-    ) = this.size * when (this.units) {
+    ) = round(this.size * when (this.units) {
         Units.AUTO -> 0f
         Units.PX -> 1f
         Units.DP -> deviceMetrics.density
@@ -134,7 +136,7 @@ open class Size(val size: Float, val units: Units) {
         Units.FA -> fontAscent
         Units.FD -> fontDescent
         Units.FH -> fontAscent + fontDescent
-    }
+    })
 
     /**
      * Преобразование размера в конечные пиксели устройства.
@@ -149,7 +151,7 @@ open class Size(val size: Float, val units: Units) {
      */
     fun toPixels(deviceMetrics: DeviceMetrics, localMetrics: LocalMetrics,
         useParentSize: Boolean = true, horizontal: Boolean = false
-    ) = this.size * when (this.units) {
+    ) = round(this.size * when (this.units) {
         Units.AUTO -> 0f
         Units.PX -> 1f
         Units.DP -> deviceMetrics.density
@@ -163,5 +165,5 @@ open class Size(val size: Float, val units: Units) {
         Units.FA -> localMetrics.fontAscent
         Units.FD -> localMetrics.fontDescent
         Units.FH -> localMetrics.fontAscent + localMetrics.fontDescent
-    }
+    })
 }

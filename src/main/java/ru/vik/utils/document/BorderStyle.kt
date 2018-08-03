@@ -13,7 +13,8 @@ open class BorderStyle(
     var paddingRight: Size? = null,
     var paddingBottom: Size? = null,
     var paddingLeft: Size? = null,
-    var backgroundColor: Int = 0
+    var backgroundColor: Int = 0,
+    var marginColor: Int = 0
 ) {
     constructor(borderStyle: BorderStyle?) : this(
             marginTop = borderStyle?.marginTop,
@@ -28,14 +29,15 @@ open class BorderStyle(
             paddingRight = borderStyle?.paddingRight,
             paddingBottom = borderStyle?.paddingBottom,
             paddingLeft = borderStyle?.paddingLeft,
-            backgroundColor = borderStyle?.backgroundColor ?: 0)
+            backgroundColor = borderStyle?.backgroundColor ?: 0,
+            marginColor = borderStyle?.backgroundColor ?: 0)
 
     var margin: Size?
         get() = marginTop.takeIf {
             marginTop == marginRight && marginTop == marginBottom &&
                     marginTop == marginLeft
         }
-        set(size: Size?) {
+        set(size) {
             this.marginTop = size
             this.marginRight = size
             this.marginBottom = size
@@ -44,14 +46,14 @@ open class BorderStyle(
 
     var verticalMargin: Size?
         get() = marginTop.takeIf { marginTop == marginBottom }
-        set(size: Size?) {
+        set(size) {
             this.marginTop = size
             this.marginBottom = size
         }
 
     var horizontalMargin: Size?
         get() = marginLeft.takeIf { marginLeft == marginRight }
-        set(size: Size?) {
+        set(size) {
             this.marginLeft = size
             this.marginRight = size
         }
@@ -61,7 +63,7 @@ open class BorderStyle(
             borderTop == borderRight && borderTop == borderBottom &&
                     borderTop == borderLeft
         }
-        set(border: Border?) {
+        set(border) {
             this.borderTop = border
             this.borderRight = border
             this.borderBottom = border
@@ -70,14 +72,14 @@ open class BorderStyle(
 
     var verticalBorder: Border?
         get() = borderTop.takeIf { borderTop == borderBottom }
-        set(size: Border?) {
+        set(size) {
             this.borderTop = size
             this.borderBottom = size
         }
 
     var horizontalBorder: Border?
         get() = borderLeft.takeIf { borderLeft == borderRight }
-        set(size: Border?) {
+        set(size) {
             this.borderLeft = size
             this.borderRight = size
         }
@@ -87,7 +89,7 @@ open class BorderStyle(
             paddingTop == paddingRight && paddingTop == paddingBottom &&
                     paddingTop == paddingLeft
         }
-        set(size: Size?) {
+        set(size) {
             this.paddingTop = size
             this.paddingRight = size
             this.paddingBottom = size
@@ -96,14 +98,14 @@ open class BorderStyle(
 
     var verticalPadding: Size?
         get() = paddingTop.takeIf { paddingTop == paddingBottom }
-        set(size: Size?) {
+        set(size) {
             this.paddingTop = size
             this.paddingBottom = size
         }
 
     var horizontalPadding: Size?
         get() = paddingLeft.takeIf { paddingLeft == paddingRight }
-        set(size: Size?) {
+        set(size) {
             this.paddingLeft = size
             this.paddingRight = size
         }
@@ -130,14 +132,6 @@ open class BorderStyle(
         borderStyle.paddingLeft?.also { this.paddingLeft = it }
         this.backgroundColor = borderStyle.backgroundColor
         return this
-    }
-
-    fun needForDraw(): Boolean {
-        return (this.backgroundColor != 0 ||
-                this.borderTop?.let { it.color != 0 && it.size != 0f } == true &&
-                this.borderRight?.let { it.color != 0 && it.size != 0f } == true &&
-                this.borderBottom?.let { it.color != 0 && it.size != 0f } == true &&
-                this.borderLeft?.let { it.color != 0 && it.size != 0f } == true)
     }
 
     fun setMarginTop(marginTop: Size?): BorderStyle {
@@ -250,6 +244,11 @@ open class BorderStyle(
 
     fun setBackgroundColor(color: Int): BorderStyle {
         this.backgroundColor = color
+        return this
+    }
+
+    fun setMarginColor(color: Int): BorderStyle {
+        this.marginColor = color
         return this
     }
 

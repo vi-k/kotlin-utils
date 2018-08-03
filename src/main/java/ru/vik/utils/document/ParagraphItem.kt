@@ -1,16 +1,22 @@
 package ru.vik.utils.document
 
 interface ParagraphItem {
-    val borderStyle: BorderStyle
-    val paragraphStyle: ParagraphStyle
-    val characterStyle: CharacterStyle
-    var text: String
-    val span get() = addSpan()
-
     class Word(val number: Int)
     class NextString(val string: String, var number: Int = 1)
     class LastString(val string: String)
     class NextRegex(val regex: Regex, var number: Int = 1)
+
+    val borderStyle: BorderStyle
+    val paragraphStyle: ParagraphStyle
+    val characterStyle: CharacterStyle
+    var text: String
+
+    val span get() = addSpan()
+
+//    operator fun ParagraphItem.invoke(init: ParagraphItem.() -> Unit): ParagraphItem {
+//        this.init()
+//        return this
+//    }
 
     fun word(number: Int) = Word(number)
     fun next(string: String, number: Int = 1) = NextString(string, number)
@@ -251,4 +257,10 @@ interface ParagraphItem {
     fun findString(string: String, start: Int = 0): Pair<Int, Int>
     fun findLastString(string: String): Pair<Int, Int>
     fun find(regex: Regex, start: Int = 0): Pair<Int, Int>
+}
+
+// Назначаем invoke всем наследникам ParagraphItem (Paragraph, Section и Document)
+operator fun <T : ParagraphItem> T.invoke(init: T.() -> Unit): T {
+    this.init()
+    return this
 }

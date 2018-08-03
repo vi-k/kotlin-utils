@@ -5,17 +5,13 @@ import ru.vik.utils.parser.parseWord
 
 class Paragraph(text: String? = null) : ParagraphItem {
     var parent: Section? = null
-
+    val spans = mutableListOf<Span>()
+    internal val textBuilder = if (text != null) StringBuilder(text) else StringBuilder()
     override val borderStyle = BorderStyle()
     override val paragraphStyle = ParagraphStyle()
     override val characterStyle = CharacterStyle()
+    var data: Any? = null
 
-    val cacheParagraphStyle = ParagraphStyle()
-    val cacheCharacterStyle = CharacterStyle()
-    val cacheLocalMetrics = Size.LocalMetrics()
-    val cacheSegmentLocalMetrics = Size.LocalMetrics()
-
-    internal val textBuilder = if (text != null) StringBuilder(text) else StringBuilder()
     override var text: String
         get() = this.textBuilder.toString()
         set(value) {
@@ -23,8 +19,6 @@ class Paragraph(text: String? = null) : ParagraphItem {
             this.textBuilder.setLength(0)
             this.textBuilder.append(value)
         }
-
-    val spans = mutableListOf<Span>()
 
     /**
      * Добавление участка форматирования

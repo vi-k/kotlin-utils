@@ -4,19 +4,13 @@ import ru.vik.utils.parser.StringParser
 
 open class Section : ParagraphItem {
     var parent: Section? = null
-
+    var firstBaselineToTop: Boolean = false
+    private val _items = mutableListOf<ParagraphItem>()
+    val items: List<ParagraphItem> get() = this._items
     final override var borderStyle = BorderStyle()
     final override var paragraphStyle = ParagraphStyle()
     final override var characterStyle = CharacterStyle()
-
-    var firstBaselineToTop: Boolean = false
-
-    val cacheParagraphStyle = ParagraphStyle()
-    val cacheCharacterStyle = CharacterStyle()
-    val cacheLocalMetrics = Size.LocalMetrics()
-
-    private val _items = mutableListOf<ParagraphItem>()
-    val items: List<ParagraphItem> get() = this._items
+    var data: Any? = null
 
     override var text: String
         get() {
@@ -51,6 +45,8 @@ open class Section : ParagraphItem {
                 }
             }
         }
+
+    val section get() = addSection()
 
     operator fun get(index: Int) = this._items[index]
 
@@ -90,14 +86,16 @@ open class Section : ParagraphItem {
         throw IndexOutOfBoundsException()
     }
 
-    fun addSection(section: Section) {
+    fun addSection(section: Section = Section()): Section {
         section.parent = this
         this._items.add(section)
+        return section
     }
 
-    fun addParagraph(paragraph: Paragraph) {
+    fun addParagraph(paragraph: Paragraph = Paragraph()): Paragraph {
         paragraph.parent = this
         this._items.add(paragraph)
+        return paragraph
     }
 
     fun clear() {
