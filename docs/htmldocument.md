@@ -9,6 +9,7 @@
 ## Содержание модуля
 
 - [Простой пример](#Простой-пример)
+- [Заголовки, секции и абзацы](#Заголовки-секции-и-абзацы)
 - [`SimpleHtmlDocument`]
 
 # Простой пример
@@ -132,7 +133,7 @@ htmlDocument.text = "<red>Lorem</red> <b>ipsum</b> <i>dolor</i> <b><i>sit</i></b
 
 <img src="htmldocument/screenshot_1_5.png" width=351>
 
-Заголовки, секции и абзацы:
+# Заголовки, секции и абзацы
 
 ```kotlin
 tag("h1") {
