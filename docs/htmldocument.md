@@ -10,6 +10,7 @@
 
 - [Простой пример](#Простой-пример)
 - [Заголовки, секции и абзацы](#Заголовки-секции-и-абзацы)
+- [Аттрибуты тегов](#Аттрибуты-тегов)
 - [`SimpleHtmlDocument`]
 
 # Простой пример
@@ -136,47 +137,48 @@ htmlDocument.text = "<red>Lorem</red> <b>ipsum</b> <i>dolor</i> <b><i>sit</i></b
 # Заголовки, секции и абзацы
 
 ```kotlin
-tag("h1") {
-    type = Tag.Type.PARAGRAPH
+htmlDocument {
+    tag("h1") {
+        type = Tag.Type.PARAGRAPH
 
-    characterStyle {
-        size = Size.em(2f)
-        bold = true
+        characterStyle {
+            size = Size.em(2f)
+            bold = true
+        }
+
+        paragraphStyle {
+            spaceBefore = Size.em(0.67f)
+            spaceAfter = Size.em(0.67f)
+        }
     }
 
-    paragraphStyle {
-        spaceBefore = Size.em(0.67f)
-        spaceAfter = Size.em(0.67f)
+    tag("div") {
+        type = Tag.Type.SECTION
     }
-}
 
-tag("div") {
-    type = Tag.Type.SECTION
-}
+    tag("p") {
+        type = Tag.Type.PARAGRAPH
 
-tag("p") {
-    type = Tag.Type.PARAGRAPH
-
-    paragraphStyle {
-        spaceBefore = Size.em(1f)
-        spaceAfter = Size.em(1f)
+        paragraphStyle {
+            spaceBefore = Size.em(1f)
+            spaceAfter = Size.em(1f)
+        }
     }
+
+    tag("br") {
+        type = Tag.Type.BR
+    }
+
+    text = """
+        <h1>Lorem ipsum</h1>
+        <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+    """.trimIndent()
 }
-
-tag("br") {
-    type = Tag.Type.BR
-}
-
-text = """
-    <h1>Lorem ipsum</h1>
-    <div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-    </div>
-""".trimIndent()
-
 ```
 
 <img src="htmldocument/screenshot_2.png" width=351>
@@ -184,6 +186,32 @@ text = """
 `BaseHtmlDocument` существует специально для тонкой настройки под собственные нужды - не всегда программисту нужны все стандартные возможности HTML, зато может понадобиться нестандартный функционал. Особенно это важно, когда HTML-текст поставляется не самим программистом, который в состоянии сам себя контролировать, а пользователем, от которого можно получить совсем не то, что ожидалось. И с одной стороны, где-то надо ограничить пользователя в возможностях, а с другой, в чём-то облегчить ему жизнь, добавив какие-нибудь специфические возможности.
 
 Если ручная настройка не нужна, то можно использовать класс [`SimpleHtmlDocument`], уже готовый к использованию.
+
+# Аттрибуты тегов
+
+Как быть, если стиль тега должен быть настроен в зависимости от его аттрибутов? В DSL-разделах `characterStyle`, `paragraphStyle` и `borderStyle` устанавливается не стиль для тега, а лямбда-функция, которая будет запускаться каждый раз, когда соответствующий тег будет появляться. Первым неявным параметром (в виде `this`) в неё передаётся сам стиль, а вторым параметром (единственным явным) передаётся тег со списком аттрибутов. И уже исходя из установленных аттрибутов мы можем сделать необходимые настройки:
+
+```kotlin
+htmlDocument {
+    tag("font") {
+        type = Tag.Type.CHARACTER
+        characterStyle { tag ->
+            toHtmlColor(tag.attributes["color"])?.also { color = it }
+            toHtmlSize(tag.attributes["size"], allowPercent = true)?.also { size = it }
+        }
+    }
+
+    htmlDocument.text = "<font color='#ff0000'>Lorem</font> " +
+            "<font color='#0f0'>ipsum</font> " +
+            "<font color='rgb(0,0,255)'>dolor</font> " +
+            "<font color='rgba(0,0,0,0.5)'>sit</font> " +
+            "<font size='1.75em'>amet</font>, " +
+            "<font size='24px'>consectetur</font> " +
+            "<font size='125%'>adipiscing</font> elit..."
+}
+```
+
+<img src="htmldocument/screenshot_3.png" width=351>
 
 # SimpleHtmlDocument
 
