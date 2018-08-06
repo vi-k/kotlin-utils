@@ -4,7 +4,7 @@
 
 [`document`]: https://github.com/vi-k/kotlin-utils/wiki/document
 [`DocumentView`]: https://github.com/vi-k/android-documentview
-[`SimpleHtmlDocument`]: #SimpleHtmlDocument
+[`SimpleHtmlDocument`]: #simplehtmldocument
 
 ## Содержание модуля
 
