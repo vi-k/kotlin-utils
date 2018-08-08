@@ -9,7 +9,7 @@
 ## Содержание модуля
 
 - [Простой пример](#Простой-пример)
-- [Заголовки, секции и абзацы](#Заголовки-секции-и-абзацы)
+- [Заголовки, разделы, абзацы, разрыв строк](#Заголовки-разделы-абзацы-разрыв-строк)
 - [Аттрибуты тегов](#Аттрибуты-тегов)
 - [`SimpleHtmlDocument`]
 
@@ -134,36 +134,139 @@ htmlDocument.text = "<red>Lorem</red> <b>ipsum</b> <i>dolor</i> <b><i>sit</i></b
 
 <img src="htmldocument/screenshot_1_5.png" width=351>
 
-# Заголовки, секции и абзацы
+`BaseHtmlDocument` существует специально для тонкой настройки под собственные нужды - не всегда программисту нужны все стандартные возможности HTML, зато может понадобиться нестандартный функционал. Особенно это важно, когда HTML-текст поставляется не самим программистом, который в состоянии сам себя контролировать, а пользователем, от которого можно получить совсем не то, что ожидалось. И с одной стороны, где-то надо ограничить пользователя в возможностях, а с другой, в чём-то облегчить ему жизнь, добавив какие-нибудь специфические возможности. Если же ручная настройка не нужна, то можно использовать класс [`SimpleHtmlDocument`], уже настроенный на базовое форматирование HTML.
+
+# Заголовки, разделы, абзацы, разрыв строк
+
+Абзацы (paragraphs), в том числе и заголовки, устанавливаются через тип тега `PARAGRAPH`. Помимо стиля знаков `characterStyle` к ним применимы стили рамок `borderStyle` и абзацев `paragraphStyle`:
 
 ```kotlin
 htmlDocument {
     tag("h1") {
         type = Tag.Type.PARAGRAPH
-
         characterStyle {
             size = Size.em(2f)
             bold = true
         }
-
         paragraphStyle {
             spaceBefore = Size.em(0.67f)
             spaceAfter = Size.em(0.67f)
         }
     }
 
-    tag("div") {
-        type = Tag.Type.SECTION
+    tag("h2") {
+        type = Tag.Type.PARAGRAPH
+        characterStyle {
+            size = Size.em(1.5f)
+            bold = true
+        }
+        paragraphStyle {
+            spaceBefore = Size.em(0.83f)
+            spaceAfter = Size.em(0.83f)
+        }
     }
 
-    tag("p") {
+    tag("h3") {
         type = Tag.Type.PARAGRAPH
-
+        characterStyle {
+            size = Size.em(1.17f)
+            bold = true
+        }
         paragraphStyle {
             spaceBefore = Size.em(1f)
             spaceAfter = Size.em(1f)
         }
     }
+
+    tag("p") {
+        type = Tag.Type.PARAGRAPH
+        paragraphStyle {
+            spaceBefore = Size.em(1f)
+            spaceAfter = Size.em(1f)
+        }
+    }
+
+    text = """
+        <h1>Lorem ipsum</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <h2>Ut enim</h2>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <h3>Duis aute</h3>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    """.trimIndent()
+}
+```
+
+<img src="htmldocument/screenshot_2_1.png" width=351>
+
+В этом примере настройки были взяты из Chrome. Разумеется, можно настроить и по-своему:
+
+```kotlin
+htmlDocument {
+    characterStyle {
+        size = Size.pt(8f)
+        font = "sans_serif"
+    }
+
+    paragraphStyle {
+        firstLeftIndent = Size.pt(16f)
+        spaceBefore = Size.pt(4f)
+        spaceAfter = Size.pt(4f)
+    }
+
+    tag("h1") {
+        type = Tag.Type.PARAGRAPH
+        characterStyle {
+            size = Size.pt(16f)
+            bold = true
+            font = "serif"
+        }
+        paragraphStyle {
+            spaceBefore = Size.pt(12f)
+            spaceAfter = Size.pt(12f)
+        }
+    }
+
+    tag("h2") {
+        type = Tag.Type.PARAGRAPH
+        characterStyle {
+            size = Size.pt(12f)
+            bold = true
+            font = "serif"
+        }
+        paragraphStyle {
+            spaceBefore = Size.pt(8f)
+            spaceAfter = Size.pt(8f)
+        }
+    }
+
+    tag("h3") {
+        type = Tag.Type.PARAGRAPH
+        characterStyle {
+            bold = true
+            font = "serif"
+        }
+    }
+
+    tag("p") {
+        type = Tag.Type.PARAGRAPH
+    }
+    ...
+}
+```
+
+<img src="htmldocument/screenshot_2_2.png" width=351>
+
+Здесь мы сначала настроили общие параметры для всего документа, и только затем в тегах добавили отличия. 
+
+Разделы (sections) служат для объединения абзацев. Стили `characterStyle` и `paragraphStyle` влияют на все содержащиеся в них абзацы. Но стиль `borderStyle` имеет отношение только к самой секции:
+
+```kotlin
+    tag("div") {
+        type = Tag.Type.SECTION
+    }
+
 
     tag("br") {
         type = Tag.Type.BR
@@ -182,10 +285,6 @@ htmlDocument {
 ```
 
 <img src="htmldocument/screenshot_2.png" width=351>
-
-`BaseHtmlDocument` существует специально для тонкой настройки под собственные нужды - не всегда программисту нужны все стандартные возможности HTML, зато может понадобиться нестандартный функционал. Особенно это важно, когда HTML-текст поставляется не самим программистом, который в состоянии сам себя контролировать, а пользователем, от которого можно получить совсем не то, что ожидалось. И с одной стороны, где-то надо ограничить пользователя в возможностях, а с другой, в чём-то облегчить ему жизнь, добавив какие-нибудь специфические возможности.
-
-Если ручная настройка не нужна, то можно использовать класс [`SimpleHtmlDocument`], уже готовый к использованию.
 
 # Аттрибуты тегов
 
