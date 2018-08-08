@@ -11,7 +11,7 @@
 - [Простой пример](#Простой-пример)
 - [Абзацы и заголовки](#Абзацы-и-заголовки)
 - [Разделы и разрывы строк](#Разделы-и-разрывы-строк)
-- [Аттрибуты тегов](#Аттрибуты-тегов)
+- [Атрибуты тегов](#Атрибуты-тегов)
 - [`SimpleHtmlDocument`]
 
 # Простой пример
@@ -330,19 +330,25 @@ htmlDocument {
 
 <img src="htmldocument/screenshot_3.png" width=351>
 
-# Аттрибуты тегов
+# Атрибуты тегов
 
-Как быть, если стиль тега должен быть настроен в зависимости от его аттрибутов? В DSL-разделах `characterStyle`, `paragraphStyle` и `borderStyle` устанавливается не стиль для тега, а лямбда-функция, которая будет запускаться каждый раз, когда соответствующий тег будет появляться. Первым неявным параметром (в виде `this`) в неё передаётся сам стиль, а вторым параметром (единственным явным) передаётся тег со списком аттрибутов. И уже исходя из установленных аттрибутов мы можем сделать необходимые настройки:
+При настройке тега блоки `characterStyle`, `paragraphStyle` и `borderStyle` не выполняются сразу для получения готового стиля. Они будут запущены позже (по аналогии с модификатором `lazy`), когда будет парситься соответствующий тег. Неявным параметром `this` в эти блоки (это обычные лямбды) передаётся сам стиль, а явным параметром (по-умолчанию `it`) передаётся тег, который хранит в себе весь список атрибутов, полученных из HTML. По этим атрибутам мы можем настроить наши теги:
 
 ```kotlin
 htmlDocument {
     tag("font") {
         type = Tag.Type.CHARACTER
         characterStyle { tag ->
-            toHtmlColor(tag.attributes["color"])?.also { color = it }
-            toHtmlSize(tag.attributes["size"], allowPercent = true)?.also { size = it }
+            tag.attributes["color"]?.toHtmlColor()?.also { color = it }
+            tag.attributes["size"]?.toHtmlSize(allowPercent = true)?.also { size = it }
+            tag.attributes["face"]?.also { font = it }
         }
     }
+
+    tag("span") {
+        type = Tag.Type.CHARACTER
+    }
+
 
     htmlDocument.text = "<font color='#ff0000'>Lorem</font> " +
             "<font color='#0f0'>ipsum</font> " +
@@ -350,11 +356,148 @@ htmlDocument {
             "<font color='rgba(0,0,0,0.5)'>sit</font> " +
             "<font size='1.75em'>amet</font>, " +
             "<font size='24px'>consectetur</font> " +
-            "<font size='125%'>adipiscing</font> elit..."
+            "<font size='125%'>adipiscing</font> " +
+            "elit, " +
+            "<font face='mono'>sed do eiusmod</font> " +
+            "<font face='georgia'>tempor incididunt ut labore</font> " +
+            "<span color='#f00' size='2em' face='sans_serif'>et dolore magna aliqua</span>."
 }
 ```
 
 <img src="htmldocument/screenshot_4.png" width=351>
+
+`BaseHtmlDocument` уже содержит готовые функции для преобразования атрибутов из строчного представления в программное (`toHtmlColor`, `toHtmlSize`, `splitBySpace`). Пример со `span` показывает, что атрибуты, определённые в теге `font` не влияют на другие теги.
+
+Это такой возможный "хардкод". Но тот же результат можно получить, сделав описание атрибутов внутри тега:
+
+```kotlin
+htmlDocument {
+    tag("font") {
+        type = Tag.Type.CHARACTER
+        attr("color") {
+            characterStyle { value ->
+                value.toHtmlColor()?.also { color = it }
+            }
+        }
+        attr("size") {
+            characterStyle { value ->
+                value.toHtmlSize()?.also { this.size = it }
+            }
+        }
+        attr("face") {
+            characterStyle { value ->
+                value.also { font = it }
+            }
+        }
+    }
+    ...
+}
+```
+
+Результат в итоге будет тот же самый. Отличия лишь в том, что в первом случае будет проверяться каждый атрибут, который вообще возможен в теге `font`, а во втором случае - только атрибуты, объявленные в тексте. Такое объявление атрибутов касается только тега, в котором он объявлен, и на другой тег (в нашем примере это `span`) не влияет.
+
+Блоки стилей `characterStyle`, `borderStyle` и `paragraphStyle` в описании `attr` это тоже лямбды с отложенным (`lazy`) запуском, существующие в двух вариантах:
+
+- с одним параметром - значением атрибута;
+- и с двумя параметрами - тегом и значением атрибута.
+
+Указать и назвать параметры надо обязательно. Неявный вариант работать не будет:
+
+```kotlin
+// 1) Только значение атрибута
+characterStyle { value ->
+    ...
+}
+// 2) И тег, и значение атрибута
+characterStyle { tag, value ->
+    ...
+}
+// 3) Ошибка, не откомпилируется!
+characterStyle {
+    ...
+}
+```
+
+Атрибут может быть объявлен и вне объявление тега, только вторым параметром в этом случае надо указать название тега, к которому будет применено объявление атрибута.
+
+```kotlin
+htmlDocument {
+    tag("font") {
+        ...
+    }
+    
+    attr("color", "font") {
+        characterStyle { value ->
+            value.toHtmlColor()?.also { color = it }
+        }
+    }
+    attr("size", "font") {
+        characterStyle { value ->
+            value.toHtmlSize()?.also { this.size = it }
+        }
+    }
+    attr("face", "font") {
+        characterStyle { value ->
+            value.also { font = it }
+        }
+    }
+    ...
+}
+```
+
+Результат будет всё тот же. В этом варианте следом за названием атрибута можно указать через запятую список тегов, к которым это объявление атрибута будет применено. Если список отсутствует, то объявление будет распространено на все теги:
+
+```kotlin
+htmlDocument {
+    tag("p") {
+        type = Tag.Type.PARAGRAPH
+    }
+
+    tag("div") {
+        type = Tag.Type.SECTION
+    }
+
+    tag("div2") {
+        type = Tag.Type.SECTION
+    }
+
+    attr("align", "h1", "h2", "h3", "h4", "h5", "h6", "div", "p") {
+        paragraphStyle { value ->
+            when (value) {
+                "left" -> align = ParagraphStyle.Align.LEFT
+                "center" -> align = ParagraphStyle.Align.CENTER
+                "right" -> align = ParagraphStyle.Align.RIGHT
+                "justify" -> align = ParagraphStyle.Align.JUSTIFY
+            }
+        }
+    }
+
+    attr("lang") {
+        characterStyle { value ->
+            if (value == "csl") font = "ponomar"
+        }
+    }
+
+    htmlDocument.text = """
+        <div align='center'>
+            <p>In the centre</p>
+            <p lang='csl'>Посредѣ̀</p>
+        </div>
+        <div align='right'>
+            <p>On the right</p>
+            <p lang='csl'>Ѡ҆деснѹ́ю</p>
+        </div>
+        <div2 align='center'>
+            <p>Not in the centre. On the left</p>
+            <p lang='csl'>Не посредѣ̀, а҆  ѡ҆шѹ́юю</p>
+        </div2>
+    """.trimIndent()
+}
+```
+
+<img src="htmldocument/screenshot_5.png" width=351>
+
+Атрибут `align` может теперь использоваться в тегах `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `div` и `p`. Атрибут `lang` сделан универсальным для всех тегов.
 
 # SimpleHtmlDocument
 
