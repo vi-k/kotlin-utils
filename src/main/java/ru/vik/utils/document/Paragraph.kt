@@ -10,7 +10,7 @@ class Paragraph(text: String? = null) : ParagraphItem {
     override val borderStyle = BorderStyle()
     override val paragraphStyle = ParagraphStyle()
     override val characterStyle = CharacterStyle()
-    var data: Any? = null
+    override var data: Any? = null
 
     override var text: String
         get() = this.textBuilder.toString()

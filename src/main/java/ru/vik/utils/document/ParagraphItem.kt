@@ -10,13 +10,9 @@ interface ParagraphItem {
     val paragraphStyle: ParagraphStyle
     val characterStyle: CharacterStyle
     var text: String
+    var data: Any?
 
     val span get() = addSpan()
-
-//    operator fun ParagraphItem.invoke(init: ParagraphItem.() -> Unit): ParagraphItem {
-//        this.init()
-//        return this
-//    }
 
     fun word(number: Int) = Word(number)
     fun next(string: String, number: Int = 1) = NextString(string, number)

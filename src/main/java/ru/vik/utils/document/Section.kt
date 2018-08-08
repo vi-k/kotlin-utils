@@ -4,13 +4,17 @@ import ru.vik.utils.parser.StringParser
 
 open class Section : ParagraphItem {
     var parent: Section? = null
-    var firstBaselineToTop: Boolean = false
     private val _items = mutableListOf<ParagraphItem>()
     val items: List<ParagraphItem> get() = this._items
-    final override var borderStyle = BorderStyle()
-    final override var paragraphStyle = ParagraphStyle()
-    final override var characterStyle = CharacterStyle()
-    var data: Any? = null
+    override var borderStyle = BorderStyle()
+    override var paragraphStyle = ParagraphStyle()
+    override var characterStyle = CharacterStyle()
+    override var data: Any? = null
+    var firstBaselineToTop: Boolean = false
+    var drawEmptyParagraph = false
+    var marginCollapsing = true
+    var ignoreFirstMargin = false
+    var ignoreLastMargin = false
 
     override var text: String
         get() {
@@ -71,19 +75,38 @@ open class Section : ParagraphItem {
         throw IndexOutOfBoundsException()
     }
 
-    fun paragraph(index: Int, init: (Paragraph.() -> Unit)? = null): Paragraph {
+    fun paragraph(index: Int, init: (Paragraph.(Int) -> Unit)? = null): Paragraph {
         var count = index
 
         for (item in this._items) {
             (item as? Paragraph)?.also {
                 if (count-- == 0) {
-                    init?.invoke(it)
+                    init?.invoke(it, index)
                     return it
                 }
             }
         }
 
         throw IndexOutOfBoundsException()
+    }
+
+    fun paragraph(indexes: IntRange, init: (Paragraph.(Int) -> Unit)? = null) {
+        for (index in indexes) paragraph(index, init)
+    }
+
+    fun paragraph(vararg indexes: Int, init: (Paragraph.(Int) -> Unit)? = null) {
+        if (indexes.isEmpty()) {
+            // Все элементы
+            var index = 0
+            for (item in this._items) {
+                (item as? Paragraph)?.also {
+                    init?.invoke(it, index++)
+                }
+            }
+        } else {
+            // Выборочные элементы
+            for (index in indexes) paragraph(index, init)
+        }
     }
 
     fun addSection(section: Section = Section()): Section {
