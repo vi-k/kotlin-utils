@@ -6,27 +6,42 @@ import ru.vik.utils.document.*
 open class SimpleHtmlDocument : BaseHtmlDocument() {
 
     init {
-        addTag("br", TagConfig(type = Tag.Type.BR))
+        tag("br") {
+            type = Tag.Type.BR
+        }
 
         // Sections
-        addTag("div", TagConfig(
-                type = Tag.Type.SECTION,
-                onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
-                onSetCharacterStyle = ::setCharacterStyleFromAttributes))
+        tag("div") {
+            type = Tag.Type.SECTION
+            borderStyle(::setBorderStyleFromAttributes)
+            paragraphStyle(::setParagraphStyleFromAttributes)
+            characterStyle(::setCharacterStyleFromAttributes)
+//            onSetBorderStyle = ::setBorderStyleFromAttributes
+//            onSetParagraphStyle = ::setParagraphStyleFromAttributes
+//            onSetCharacterStyle = ::setCharacterStyleFromAttributes
+        }
 
         // Paragraphs
-        addTag("p", TagConfig(
-                type = Tag.Type.PARAGRAPH,
-                onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetParagraphStyle = ::setParagraphStyleFromAttributes,
-                onSetCharacterStyle = ::setCharacterStyleFromAttributes))
+        tag("p") {
+            type = Tag.Type.PARAGRAPH
+            borderStyle(::setBorderStyleFromAttributes)
+            paragraphStyle {
+                spaceBefore = Size.em(1f)
+                spaceAfter = Size.em(1f)
+                setParagraphStyleFromAttributes(this, it)
+            }
+            characterStyle(::setCharacterStyleFromAttributes)
+
+//            onSetBorderStyle = ::setBorderStyleFromAttributes
+//            onSetParagraphStyle = ::setParagraphStyleFromAttributes
+//            onSetCharacterStyle = ::setCharacterStyleFromAttributes
+        }
 
         addTag("h1", TagConfig(
                 type = Tag.Type.PARAGRAPH,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetParagraphStyle = ::setParagraphStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     size = Size.em(1.6f)
                     bold = true
                     setCharacterStyleFromAttributes(this, tag)
@@ -36,7 +51,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                 type = Tag.Type.PARAGRAPH,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetParagraphStyle = ::setParagraphStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     size = Size.em(1.4f)
                     bold = true
                     setCharacterStyleFromAttributes(this, tag)
@@ -46,7 +61,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                 type = Tag.Type.PARAGRAPH,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
                 onSetParagraphStyle = ::setParagraphStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     size = Size.em(1.2f)
                     bold = true
                     setCharacterStyleFromAttributes(this, tag)
@@ -54,7 +69,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
 
         addTag("blockquote", TagConfig(
                 type = Tag.Type.PARAGRAPH,
-                onSetBorderStyle = { tag->
+                onSetBorderStyle = { tag ->
                     marginLeft = Size.em(2f)
                     setBorderStyleFromAttributes(this, tag)
                 },
@@ -65,7 +80,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("b", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     bold = true
                     setCharacterStyleFromAttributes(this, tag)
                 }))
@@ -73,7 +88,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("i", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     italic = true
                     setCharacterStyleFromAttributes(this, tag)
                 }))
@@ -81,7 +96,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("s", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     strike = true
                     setCharacterStyleFromAttributes(this, tag)
                 }))
@@ -98,7 +113,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("sub", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     size = Size.em(0.85f)
                     baselineShift = Size.em(0.25f)
                     setCharacterStyleFromAttributes(this, tag)
@@ -107,7 +122,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("sup", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     size = Size.em(0.85f)
                     baselineShift = Size.em(-0.4f)
                     setCharacterStyleFromAttributes(this, tag)
@@ -124,7 +139,7 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
         addTag("u", TagConfig(
                 type = Tag.Type.CHARACTER,
                 onSetBorderStyle = ::setBorderStyleFromAttributes,
-                onSetCharacterStyle = { tag->
+                onSetCharacterStyle = { tag ->
                     underline = true
                     setCharacterStyleFromAttributes(this, tag)
                 })

@@ -14,21 +14,73 @@ open class BaseHtmlDocument(
 
     class TagConfig(
         type: Tag.Type,
-        var onSetBorderStyle: (BorderStyle.(Tag) -> Unit)? = null,
-        var onSetParagraphStyle: (ParagraphStyle.(Tag) -> Unit)? = null,
-        var onSetCharacterStyle: (CharacterStyle.(Tag) -> Unit)? = null
-    ) : BaseHtml.BaseTagConfig(type) {
+        internal var onSetBorderStyle: (BorderStyle.(Tag) -> Unit)? = null,
+        internal var onSetParagraphStyle: (ParagraphStyle.(Tag) -> Unit)? = null,
+        internal var onSetCharacterStyle: (CharacterStyle.(Tag) -> Unit)? = null
+    ) : BaseHtml.BaseTagConfig(type)
 
-        fun borderStyle(init: BorderStyle.(Tag) -> Unit) {
+    class AttrConfig {
+        private val tags = hashSetOf<String>()
+        internal var onSetBorderStyle: (BorderStyle.(Tag, String) -> Unit)? = null
+        internal var onSetParagraphStyle: (ParagraphStyle.(Tag, String) -> Unit)? = null
+        internal var onSetCharacterStyle: (CharacterStyle.(Tag, String) -> Unit)? = null
+
+        fun borderStyle(init: BorderStyle.(String) -> Unit) {
+            onSetBorderStyle = { _, value -> init(value) }
+        }
+
+        fun borderStyle(init: BorderStyle.(Tag, String) -> Unit) {
             onSetBorderStyle = init
         }
 
-        fun paragraphStyle(init: ParagraphStyle.(Tag) -> Unit) {
+        fun paragraphStyle(init: ParagraphStyle.(String) -> Unit) {
+            onSetParagraphStyle = { _, value -> init(value) }
+        }
+
+        fun paragraphStyle(init: ParagraphStyle.(Tag, String) -> Unit) {
             onSetParagraphStyle = init
         }
 
-        fun characterStyle(init: CharacterStyle.(Tag) -> Unit) {
+        fun characterStyle(init: CharacterStyle.(String) -> Unit) {
+            onSetCharacterStyle = { _, value -> init(value) }
+        }
+
+        fun characterStyle(init: CharacterStyle.(Tag, String) -> Unit) {
             onSetCharacterStyle = init
+        }
+
+        infix fun tag(string: String): AttrConfig {
+            this.tags.add(string)
+            return this
+        }
+    }
+
+    class TagContext(
+        val tag: String,
+        private val document: BaseHtmlDocument,
+        private val tagConfig: TagConfig
+    ) {
+        var type
+            get() = this.tagConfig.type
+            set(value) {
+                this.tagConfig.type = value
+            }
+
+        fun borderStyle(init: BorderStyle.(Tag) -> Unit) {
+            this.tagConfig.onSetBorderStyle = init
+        }
+
+        fun paragraphStyle(init: ParagraphStyle.(Tag) -> Unit) {
+            this.tagConfig.onSetParagraphStyle = init
+        }
+
+        fun characterStyle(init: CharacterStyle.(Tag) -> Unit) {
+            this.tagConfig.onSetCharacterStyle = init
+        }
+
+        fun attr(attr: String, vararg tags: String, init: (AttrConfig.() -> Unit)?) {
+            assert(tags.isNotEmpty()) { "You cannot specify tags here. Use BaseHtmlDocument.attr()" }
+            this.document.attr(attr, this.tag) { init?.invoke(this) }
         }
     }
 
@@ -37,6 +89,8 @@ open class BaseHtmlDocument(
         var paragraph: Paragraph? = null,
         val openedSpans: MutableList<Span> = mutableListOf()
     )
+
+    private val attrConfig = hashMapOf<String, AttrConfig>()
 
     override var text: String
         get() = super.text
@@ -49,17 +103,37 @@ open class BaseHtmlDocument(
             tagToText(this.html.root!!, state, true)
         }
 
-    fun tag(name: String, init: (TagConfig.() -> Unit)?): TagConfig {
-        var tagConfig = getTagConfig(name)
-
-        if (tagConfig == null) {
-            tagConfig = TagConfig(Tag.Type.UNKNOWN)
-            this.html.config[name] = tagConfig
+    fun tag(tag: String, init: (TagContext.() -> Unit)?): TagContext {
+        val tagConfig = getTagConfig(tag) ?: TagConfig(Tag.Type.UNKNOWN).let {
+            this.html.config[tag] = it
+            it
         }
 
-        init?.invoke(tagConfig)
+        val tagContext = TagContext(tag, this, tagConfig)
 
-        return tagConfig
+        init?.invoke(tagContext)
+
+        return tagContext
+    }
+
+    fun attr(name: String, vararg tags: String, init: (AttrConfig.() -> Unit)?): AttrConfig {
+        lateinit var config: AttrConfig
+
+        if (tags.isEmpty()) {
+            config = this.attrConfig[name] ?: AttrConfig().let {
+                this.attrConfig[name] = it
+                it
+            }
+        } else {
+            config = this.attrConfig["${tags[0]}.$name"] ?: AttrConfig()
+            for (tag in tags) {
+                this.attrConfig["$tag.$name"] = config
+            }
+        }
+
+        init?.invoke(config)
+
+        return config
     }
 
     fun getTagConfig(name: String): TagConfig? {
@@ -68,6 +142,25 @@ open class BaseHtmlDocument(
 
     fun addTag(name: String, config: TagConfig) {
         this.html.config[name] = config
+    }
+
+    private fun applyConfigs(tag: Tag, tagConfig: TagConfig?, borderStyle: BorderStyle,
+        characterStyle: CharacterStyle, paragraphStyle: ParagraphStyle? = null
+    ) {
+        tagConfig?.apply {
+            onSetBorderStyle?.invoke(borderStyle, tag)
+            onSetCharacterStyle?.invoke(characterStyle, tag)
+            paragraphStyle?.apply { onSetParagraphStyle?.invoke(this, tag) }
+        }
+
+        for ((attr, value) in tag.attributes) {
+            (this.attrConfig["${tag.name}.$attr"] ?: this.attrConfig[attr])?.apply {
+                onSetBorderStyle?.invoke(borderStyle, tag, value ?: "")
+                onSetCharacterStyle?.invoke(characterStyle, tag, value ?: "")
+                paragraphStyle?.apply { onSetParagraphStyle?.invoke(this, tag, value ?: "") }
+            }
+        }
+
     }
 
     private fun tagToText(tag: Tag, state: State, isRoot: Boolean = false) {
@@ -80,11 +173,8 @@ open class BaseHtmlDocument(
                 // Добавляем раздел
 
                 val section = if (isRoot) state.section else Section()
-                config?.also {
-                    it.onSetBorderStyle?.invoke(section.borderStyle, tag)
-                    it.onSetParagraphStyle?.invoke(section.paragraphStyle, tag)
-                    it.onSetCharacterStyle?.invoke(section.characterStyle, tag)
-                }
+                applyConfigs(tag, config, section.borderStyle, section.characterStyle,
+                        section.paragraphStyle)
 
                 var parent: Section? = null
 
@@ -116,12 +206,8 @@ open class BaseHtmlDocument(
                 // Добавляем абзац
 
                 val paragraph = appendParagraph(state, tag.text)
-
-                config?.also {
-                    it.onSetBorderStyle?.invoke(paragraph.borderStyle, tag)
-                    it.onSetParagraphStyle?.invoke(paragraph.paragraphStyle, tag)
-                    it.onSetCharacterStyle?.invoke(paragraph.characterStyle, tag)
-                }
+                applyConfigs(tag, config, paragraph.borderStyle, paragraph.characterStyle,
+                        paragraph.paragraphStyle)
 
                 for (child in tag.children) {
                     tagToText(child, state)
@@ -141,10 +227,7 @@ open class BaseHtmlDocument(
 
                 if (tag.name.isNotEmpty()) {
                     span = Span(0, -1, CharacterStyle(), BorderStyle())
-                    config?.also {
-                        it.onSetBorderStyle?.invoke(span.borderStyle!!, tag)
-                        it.onSetCharacterStyle?.invoke(span.characterStyle, tag)
-                    }
+                    applyConfigs(tag, config, span.borderStyle!!, span.characterStyle)
                 }
 
                 val paragraph = state.paragraph ?: appendParagraph(state)
@@ -152,18 +235,18 @@ open class BaseHtmlDocument(
                 span?.start = paragraph.textBuilder.length
                 paragraph.textBuilder.append(tag.text)
 
-                span?.also {
-                    paragraph.addSpan(it)
-                    state.openedSpans.add(it)
+                span?.apply {
+                    paragraph.addSpan(this)
+                    state.openedSpans.add(this)
                 }
 
                 for (child in tag.children) {
                     tagToText(child, state)
                 }
 
-                span?.also {
-                    it.end = paragraph.textBuilder.length
-                    state.openedSpans.remove(it)
+                span?.apply {
+                    end = paragraph.textBuilder.length
+                    state.openedSpans.remove(this)
                 }
             }
 
@@ -203,16 +286,24 @@ open class BaseHtmlDocument(
      */
     private fun closeParagraph(state: State) {
         // Закрываем все открытые спаны
-        state.paragraph?.also {
-            for (span in it.spans) {
+        state.paragraph?.apply {
+            for (span in spans) {
                 if (span.end == -1) {
-                    span.end = it.textBuilder.length
+                    span.end = textBuilder.length
                 }
             }
         }
 
         state.paragraph = null
     }
+
+//    companion object {
+//        fun toHtmlColor(string: String?) = string?.toHtmlColor()
+//        fun toHtmlSize(string: String?, allowPercent: Boolean = true) =
+//                string?.toHtmlSize(allowPercent)
+//
+//        fun splitBySpace(string: String?) = (string ?: "").splitBySpace()
+//    }
 }
 
 /*
@@ -306,7 +397,7 @@ fun String.toHtmlSize(allowPercent: Boolean = true): Size? {
             return when (groupValues[3].toLowerCase()) {
                 "%" -> if (allowPercent) Size.ratio(num / 100f) else null
                 "em" -> Size.em(num)
-                else -> Size.dp(num)
+                else -> Size.sp(num)
             }
         }
     }
