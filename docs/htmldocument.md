@@ -328,7 +328,7 @@ htmlDocument {
 }
 ```
 
-<img src="htmldocument/screenshot_2.png" width=351>
+<img src="htmldocument/screenshot_3.png" width=351>
 
 # Аттрибуты тегов
 
