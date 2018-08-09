@@ -268,7 +268,7 @@ htmlDocument {
 
 # Разделы и разрывы строк
 
-Разделы (sections) служат для объединения абзацев. Стили `characterStyle` и `paragraphStyle` влияют на все содержащиеся в них абзацы. Стиль `borderStyle` имеет отношение только к самой секции:
+Разделы (sections) служат для объединения абзацев. Стили `characterStyle` и `paragraphStyle` влияют на все содержащиеся в них абзацы. Стиль `borderStyle` имеет отношение только к самому разделу:
 
 ```kotlin
 htmlDocument {
