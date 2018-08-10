@@ -1,14 +1,15 @@
 package ru.vik.utils.document
 
 import ru.vik.utils.color.Color
+import ru.vik.utils.font.Font
 
 class CharacterStyle(
     var font: String? = null,
     var size: Size = Size.em(1f),
     var leading: Size? = null,
     var scaleX: Float = 1f,
-    var bold: Boolean? = null,
-    var italic: Boolean? = null,
+    var weight: Int? = null,
+    var style: Style? = null,
     var underline: Boolean? = null,
     var strike: Boolean? = null,
     var color: Int? = null,
@@ -17,29 +18,52 @@ class CharacterStyle(
 //    var letterSpacing: Float? = null,
 //    var allCaps: Caps? = null
 ) {
-    var baselineShiftAdd: Size = Size.px(0f)
-
-    enum class Caps {
-        NONE, ALL_CAPS, SMALL_CAPS
+    enum class Style {
+        NORMAL, ITALIC, OBLIQUE
     }
+
+//    enum class Caps {
+//        NONE, ALL_CAPS, SMALL_CAPS
+//    }
 
     enum class VAlign {
         BASELINE, TOP, BOTTOM, BASELINE_TO_BOTTOM
     }
+
+    var baselineShiftAdd: Size = Size.px(0f)
 
     constructor(characterStyle: CharacterStyle?) : this(
             font = characterStyle?.font,
             size = characterStyle?.size ?: Size.em(1f),
             leading = characterStyle?.leading,
             scaleX = characterStyle?.scaleX ?: 1f,
-            bold = characterStyle?.bold,
-            italic = characterStyle?.italic,
+            weight = characterStyle?.weight,
+            style = characterStyle?.style,
             underline = characterStyle?.underline,
             strike = characterStyle?.strike,
             color = characterStyle?.color,
             baselineShift = characterStyle?.baselineShift ?: Size.dp(0f),
             verticalAlign = characterStyle?.verticalAlign
     )
+
+    var italic: Boolean
+        get() = style == Style.ITALIC
+        set(value) {
+            style = if (value) Style.ITALIC else Style.NORMAL
+        }
+
+    var oblique: Boolean
+        get() = style == Style.OBLIQUE
+        set(value) {
+            style = if (value) Style.OBLIQUE else Style.NORMAL
+        }
+
+    var bold: Boolean
+        get() = this.weight?.let { it >= Font.BOLD } ?: false
+        set(value) {
+            weight = if (value) Font.BOLD else Font.NORMAL
+        }
+
 
     operator fun invoke(init: CharacterStyle.() -> Unit): CharacterStyle {
         this.init()
@@ -53,8 +77,8 @@ class CharacterStyle(
         this.size = characterStyle.size
         this.leading = characterStyle.leading
         this.scaleX = characterStyle.scaleX
-        this.bold = characterStyle.bold
-        this.italic = characterStyle.italic
+        this.weight = characterStyle.weight
+        this.style = characterStyle.style
         this.underline = characterStyle.underline
         this.strike = characterStyle.strike
         this.color = characterStyle.color
@@ -133,67 +157,12 @@ class CharacterStyle(
         this.size = Size.px(characterStyle.size.toPixels(deviceMetrics, localMetrics))
 
         this.scaleX *= characterStyle.scaleX
-        characterStyle.bold?.also { this.bold = it }
-        characterStyle.italic?.also { this.italic = it }
+        characterStyle.weight?.also { this.weight = it }
+        characterStyle.style?.also { this.style = it }
         characterStyle.underline?.also { this.underline = it }
         characterStyle.strike?.also { this.strike = it }
         characterStyle.color?.also { this.color = it }
         characterStyle.verticalAlign?.also { this.verticalAlign = it }
-        return this
-    }
-
-    fun setFont(font: String?): CharacterStyle {
-        this.font = font
-        return this
-    }
-
-    fun setSize(size: Size): CharacterStyle {
-        this.size = size
-        return this
-    }
-
-    fun setLeading(leading: Size?): CharacterStyle {
-        this.leading = leading
-        return this
-    }
-
-    fun setScaleX(scaleX: Float): CharacterStyle {
-        this.scaleX = scaleX
-        return this
-    }
-
-    fun setBold(bold: Boolean?): CharacterStyle {
-        this.bold = bold
-        return this
-    }
-
-    fun setItalic(italic: Boolean?): CharacterStyle {
-        this.italic = italic
-        return this
-    }
-
-    fun setUnderline(underline: Boolean?): CharacterStyle {
-        this.underline = underline
-        return this
-    }
-
-    fun setStrike(strike: Boolean?): CharacterStyle {
-        this.strike = strike
-        return this
-    }
-
-    fun setColor(color: Int?): CharacterStyle {
-        this.color = color
-        return this
-    }
-
-    fun setBaselineShift(baselineShift: Size): CharacterStyle {
-        this.baselineShift = baselineShift
-        return this
-    }
-
-    fun setVerticalAlign(verticalAlign: VAlign?): CharacterStyle {
-        this.verticalAlign = verticalAlign
         return this
     }
 
@@ -203,8 +172,8 @@ class CharacterStyle(
                 size = Size.sp(16f),
                 leading = Size.auto(),
                 scaleX = 1f,
-                bold = false,
-                italic = false,
+                weight = Font.NORMAL,
+                style = Style.NORMAL,
                 underline = false,
                 strike = false,
                 color = Color.BLACK,

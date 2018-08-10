@@ -16,9 +16,6 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
             borderStyle(::setBorderStyleFromAttributes)
             paragraphStyle(::setParagraphStyleFromAttributes)
             characterStyle(::setCharacterStyleFromAttributes)
-//            onSetBorderStyle = ::setBorderStyleFromAttributes
-//            onSetParagraphStyle = ::setParagraphStyleFromAttributes
-//            onSetCharacterStyle = ::setCharacterStyleFromAttributes
         }
 
         // Paragraphs
@@ -31,10 +28,6 @@ open class SimpleHtmlDocument : BaseHtmlDocument() {
                 setParagraphStyleFromAttributes(this, it)
             }
             characterStyle(::setCharacterStyleFromAttributes)
-
-//            onSetBorderStyle = ::setBorderStyleFromAttributes
-//            onSetParagraphStyle = ::setParagraphStyleFromAttributes
-//            onSetCharacterStyle = ::setCharacterStyleFromAttributes
         }
 
         addTag("h1", TagConfig(
